@@ -18,7 +18,14 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Canvas x:Name="ExplorerCanvas" Background="#FFF9D8D4" Margin="10,10,10,10"/>
+            <Grid Grid.Column="1"/>
+            <Grid x:Name="ExplorerGrid" Background="#FFFFB1B1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="281*"/>
+                    <ColumnDefinition Width="119*"/>
+                </Grid.ColumnDefinitions>
+            </Grid>
+            <Label x:Name="loadingLabel" Grid.Column="1" Content="Label" HorizontalAlignment="Left" Margin="159,63,0,0" VerticalAlignment="Top"/>
         </Grid>
         <Rectangle HorizontalAlignment="Center" Height="40" Stroke="Black" VerticalAlignment="Center" Width="800" StrokeThickness="3" Grid.Row="2">
             <UIElement.RenderTransform>
@@ -45,7 +52,7 @@
                 </LinearGradientBrush>
             </Rectangle.Fill>
         </Rectangle>
-        <TextBox x:Name="SelectedFolderTextBox" HorizontalAlignment="Left" Margin="139,0,0,0" TextWrapping="Wrap" Text="Selected folder" VerticalAlignment="Center" Width="120" Height="20" RenderTransformOrigin="0.601,0.507" TextChanged="SelectedFolderTextBox_TextChanged" IsEnabled="False" AllowDrop="False" Focusable="False" IsHitTestVisible="False" IsTabStop="False" BorderBrush="{x:Null}"/>
+        <TextBlock x:Name="SelectedFolderTextBlock" HorizontalAlignment="Left" Margin="139,0,0,0" TextWrapping="Wrap" VerticalAlignment="Center" Width="439" Height="20"><Run Language="pl-pl" Text="Selected folder"/></TextBlock>
 
     </Grid>
 </Window>

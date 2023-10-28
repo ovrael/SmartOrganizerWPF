@@ -1,24 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.DirectoryServices;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 using Microsoft.WindowsAPICodePack.Dialogs;
-
-using Newtonsoft.Json;
 
 using SmartOrganizerWPF.Models;
 
@@ -30,89 +20,128 @@ namespace SmartOrganizerWPF
     public partial class MainWindow : Window
     {
         private DirectoryData? selectedDirectory;
-        private int explorerTextBlockOffset = 10;
-        private int explorerTextBlockHeight = 20;
-        private int explorerTextBlockDepthOffset = 15;
+        private int oldFolderIndex = -1;
 
         public MainWindow()
         {
             InitializeComponent();
-            SelectedFolderTextBlock.Text = string.Empty;
-            //Directory.GetLogicalDrives();
+
+            // ADD ALSO USER DEFINED DIRECTORIES
+            SelectFolderComboBox.Text = "Select folder";
+            SelectFolderComboBox.VerticalContentAlignment = VerticalAlignment.Center;
+            SelectFolderComboBox.HorizontalAlignment = HorizontalAlignment.Left;
+            SelectFolderComboBox.Items.Add("Select folder from explorer...");
+            SelectFolderComboBox.Items.Add(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic));
+            SelectFolderComboBox.Items.Add(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures));
+            SelectFolderComboBox.Items.Add(Environment.GetFolderPath(Environment.SpecialFolder.Personal));
+            SelectFolderComboBox.Items.Add($"C:\\Users\\{Environment.UserName}\\Downloads");
         }
 
-        private void OpenFolderButton_Click(object sender, RoutedEventArgs e)
+        private void SelectFolderComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
-            dialog.InitialDirectory = "C:\\Users";
-            dialog.IsFolderPicker = true;
-            if (dialog.ShowDialog() != CommonFileDialogResult.Ok)
+            ComboBox comboBox = sender as ComboBox;
+            if (comboBox == null || comboBox.SelectedItem == null) return;
+
+            string folderName = comboBox.SelectedItem.ToString();
+            if (folderName == null || folderName.Length == 0) return;
+
+            // Selected: choose other directory
+            if (comboBox.SelectedIndex == 0)
             {
-                return;
+                CommonOpenFileDialog dialog = new CommonOpenFileDialog();
+                dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                dialog.IsFolderPicker = true;
+                if (dialog.ShowDialog() != CommonFileDialogResult.Ok)
+                {
+                    return;
+                }
+
+                SelectFolderComboBox.Items.Add(dialog.FileName);
+                SelectFolderComboBox.SelectedIndex = SelectFolderComboBox.Items.Count - 1;
+                folderName = dialog.FileName;
             }
 
-            SelectedFolderTextBlock.Text = dialog.FileName;
-            LoadDirectory(dialog.FileName);
+            try
+            {
+                LoadDirectory(folderName);
+                oldFolderIndex = comboBox.SelectedIndex;
+            }
+            catch (Exception ex)
+            {
+                //(SelectFolderComboBox.Items[comboBox.SelectedIndex] as ComboBoxItem).IsEnabled = false;
+                SelectFolderComboBox.SelectedIndex = oldFolderIndex;
+
+                MessageBox.Show(ex.ToString());
+            }
         }
 
         private void LoadDirectory(string selectedFolderPath)
         {
-            try
-            {
-                if (selectedFolderPath == null) return;
-                if (selectedFolderPath == string.Empty) return;
-                if (selectedFolderPath.ToLower() == "selected folder") return;
-                loadingLabel.Content = "Loading ...";
+            if (selectedFolderPath == null) return;
+            if (selectedFolderPath == string.Empty) return;
+            if (selectedFolderPath.ToLower() == "selected folder") return;
+            loadingLabel.Content = "Loading ...";
 
-                selectedDirectory = new DirectoryData(selectedFolderPath, 0);
+            selectedDirectory = new DirectoryData(selectedFolderPath);
 
-                ExplorerGrid.Children.Clear();
+            ExplorerTreeView.Items.Clear();
 
-                AddDirectoryElement(selectedDirectory);
+            AddDirectoryTreeItem(selectedDirectory);
 
-                loadingLabel.Content = selectedFolderPath;
-
-            }
-            catch (Exception ex)
-            {
-
-            }
+            loadingLabel.Content = selectedFolderPath;
         }
 
-        private void AddDirectoryElement(DirectoryData directoryData)
+        private void AddDirectoryTreeItem(DirectoryData directoryData, TreeViewItem parent = null)
         {
+            if (directoryData.Directories.Count == 0) return;
+
             foreach (var directory in directoryData.Directories)
             {
-                TextBlock directoryTextBlock = new TextBlock();
-                directoryTextBlock.Text = "> " + directory.DirectoryInfo.Name;
-                directoryTextBlock.FontSize = 12;
-                directoryTextBlock.Height = explorerTextBlockHeight;
-                directoryTextBlock.HorizontalAlignment = HorizontalAlignment.Left;
-                directoryTextBlock.VerticalAlignment = VerticalAlignment.Top;
-                directoryTextBlock.Margin = new Thickness(explorerTextBlockOffset + directory.Depth * explorerTextBlockDepthOffset, explorerTextBlockOffset + ExplorerGrid.Children.Count * explorerTextBlockHeight, 0, 0);
+                TreeViewItem directoryTreeItem = new TreeViewItem();
+                directoryTreeItem.Header = directory.CreateTreeItemContent();
+                directoryTreeItem.Tag = directory.DirectoryInfo.FullName;
+                directoryTreeItem.FontWeight = FontWeights.Normal;
 
-                ExplorerGrid.Children.Add(directoryTextBlock);
 
-                AddDirectoryElement(directory);
+                if (parent == null)
+                {
+                    ExplorerTreeView.Items.Add(directoryTreeItem);
+                }
+                else
+                {
+                    parent.Items.Add(directoryTreeItem);
+                }
+
+                AddDirectoryTreeItem(directory, directoryTreeItem);
 
                 foreach (var file in directory.Files)
                 {
-                    AddFileElement(file);
+                    AddFileTreeItem(file, directoryTreeItem);
+                }
+            }
+
+            if (parent == null)
+            {
+                foreach (var file in directoryData.Files)
+                {
+                    TreeViewItem fileTreeItem = new TreeViewItem();
+                    fileTreeItem.Header = file.CreateTreeItemContent();
+                    fileTreeItem.Tag = file.FileInfo.FullName;
+                    fileTreeItem.FontWeight = FontWeights.Normal;
+
+                    ExplorerTreeView.Items.Add(fileTreeItem);
                 }
             }
         }
 
-        private void AddFileElement(FileData fileData)
+        private void AddFileTreeItem(FileData fileData, TreeViewItem parent)
         {
-            TextBlock fileTextBlock = new TextBlock();
-            fileTextBlock.Text = "+ " + fileData.FileInfo.Name;
-            fileTextBlock.FontSize = 12;
-            fileTextBlock.Height = explorerTextBlockHeight;
-            fileTextBlock.HorizontalAlignment = HorizontalAlignment.Left;
-            fileTextBlock.VerticalAlignment = VerticalAlignment.Top;
-            fileTextBlock.Margin = new Thickness(explorerTextBlockOffset + fileData.Depth * explorerTextBlockDepthOffset, explorerTextBlockOffset + ExplorerGrid.Children.Count * explorerTextBlockHeight, 0, 0);
+            TreeViewItem fileTreeItem = new TreeViewItem();
+            fileTreeItem.Header = fileData.CreateTreeItemContent();
+            fileTreeItem.Tag = fileData.FileInfo.FullName;
+            fileTreeItem.FontWeight = FontWeights.Normal;
 
-            ExplorerGrid.Children.Add(fileTextBlock);
+            parent.Items.Add(fileTreeItem);
         }
     }
 }

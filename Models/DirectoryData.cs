@@ -1,15 +1,11 @@
-﻿using System;
+﻿using SmartOrganizerWPF.Common;
+using SmartOrganizerWPF.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-
-using SmartOrganizerWPF.Common;
-using SmartOrganizerWPF.Interfaces;
 
 namespace SmartOrganizerWPF.Models
 {
@@ -27,22 +23,26 @@ namespace SmartOrganizerWPF.Models
             if (DirectoryInfo == null) return;
 
             // Load directories
-            string[] directoryPaths = Array.Empty<string>();
+            if (UserSettings.DeepSearch.Value)
+            {
+                string[] directoryPaths = Array.Empty<string>();
 
-            try
-            {
-                directoryPaths = Directory.GetDirectories(DirectoryInfo.FullName);
-                foreach (var directoryPath in directoryPaths)
+                try
                 {
-                    Directories.Add(new DirectoryData(directoryPath));
+                    directoryPaths = Directory.GetDirectories(DirectoryInfo.FullName);
+                    foreach (var directoryPath in directoryPaths)
+                    {
+                        Directories.Add(new DirectoryData(directoryPath));
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex);
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex);
+                }
             }
 
             // Load files
+            //MessageBox.Show("Load files for: " + DirectoryInfo.FullName);
             string[] filePaths = Directory.GetFiles(DirectoryInfo.FullName);
 
             foreach (var filePath in filePaths)

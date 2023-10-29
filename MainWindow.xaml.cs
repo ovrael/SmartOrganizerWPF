@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.DirectoryServices;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using Microsoft.WindowsAPICodePack.Dialogs;
+using SmartOrganizerWPF.Models;
+using System;
 using System.Windows;
 using System.Windows.Controls;
-
-using Microsoft.WindowsAPICodePack.Dialogs;
-
-using SmartOrganizerWPF.Models;
 
 namespace SmartOrganizerWPF
 {
@@ -19,8 +11,12 @@ namespace SmartOrganizerWPF
     /// </summary>
     public partial class MainWindow : Window
     {
+        private string selectedExtension = string.Empty;
         private DirectoryData? selectedDirectory;
         private int oldFolderIndex = -1;
+
+        private bool settingsAreOpen = false;
+        private SettingsWindow settingsWindow = null;
 
         public MainWindow()
         {
@@ -35,6 +31,7 @@ namespace SmartOrganizerWPF
             SelectFolderComboBox.Items.Add(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures));
             SelectFolderComboBox.Items.Add(Environment.GetFolderPath(Environment.SpecialFolder.Personal));
             SelectFolderComboBox.Items.Add($"C:\\Users\\{Environment.UserName}\\Downloads");
+            settingsWindow = null;
         }
 
         private void SelectFolderComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -142,6 +139,34 @@ namespace SmartOrganizerWPF
             fileTreeItem.FontWeight = FontWeights.Normal;
 
             parent.Items.Add(fileTreeItem);
+        }
+
+        private void SettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (settingsAreOpen || settingsWindow != null) return;
+
+            settingsWindow = new SettingsWindow();
+            settingsWindow.Show();
+
+            settingsWindow.Closed += SettingsWindow_Closed;
+        }
+
+        private void SettingsWindow_Closed(object? sender, EventArgs e)
+        {
+            settingsWindow.UpdateSettings();
+
+            settingsAreOpen = false;
+            settingsWindow = null;
+        }
+
+        private void SelectExtensionTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            if (textBox == null || textBox.Text == null || textBox.Text.Length == 0) return;
+
+
+
+            selectedExtension = textBox.Text;
         }
     }
 }

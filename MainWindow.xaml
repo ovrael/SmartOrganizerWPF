@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SmartOrganizerWPF"
         mc:Ignorable="d"
-        Title="Smart Organizer" Height="900" Width="1600" WindowStartupLocation="CenterScreen">
+        Title="Smart Organizer" Height="720" Width="1280" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.Background>
             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -18,7 +18,7 @@
                     </TransformGroup>
                 </LinearGradientBrush.RelativeTransform>
                 <GradientStop Color="Black"/>
-                <GradientStop Color="#FFE23333" Offset="1"/>
+                <GradientStop Color="White" Offset="1"/>
                 <GradientStop Color="#FF751212" Offset="0.674"/>
             </LinearGradientBrush>
         </Grid.Background>
@@ -29,8 +29,8 @@
         </Grid.RowDefinitions>
         <Grid Grid.Row="1" Background="#FFD5ECFD">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="831*"/>
-                <ColumnDefinition Width="769*"/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="1"/>
             <TreeView x:Name="ExplorerTreeView" Margin="10,10,10,10"/>
@@ -61,7 +61,51 @@
             </Rectangle.Fill>
         </Rectangle>
         <Label x:Name="loadingLabel" Content="Loaded directory" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="2" Width="1580" Background="{x:Null}" FontWeight="Bold" FontSize="14"/>
-        <ComboBox x:Name="SelectFolderComboBox" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Width="810" SelectionChanged="SelectFolderComboBox_SelectionChanged" Height="30" Background="{x:Null}" BorderBrush="{x:Null}"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="317*"/>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="248*"/>
+                <ColumnDefinition Width="50"/>
+            </Grid.ColumnDefinitions>
+            <ComboBox x:Name="SelectFolderComboBox" HorizontalAlignment="Center" VerticalAlignment="Center" Width="610" SelectionChanged="SelectFolderComboBox_SelectionChanged" Height="30" Background="{x:Null}" BorderBrush="{x:Null}"/>
+            <Border BorderBrush="Black" BorderThickness="1" CornerRadius="2,2,2,2" Background="#33CA0000" Grid.Column="3" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center" Width="30" MinWidth="30" MinHeight="30" MaxWidth="30" MaxHeight="30">
+                <Button x:Name="SettingsButton1" Content="" HorizontalAlignment="Center" VerticalAlignment="Center" Height="30" Width="30" Foreground="{x:Null}" RenderTransformOrigin="0.5,0.5" BorderBrush="{x:Null}" Click="SettingsButton_Click">
+                    <Button.Style>
+                        <Style TargetType="{x:Type Button}">
+                            <Setter Property="Background" Value="Green"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type Button}">
+                                        <Border Background="{TemplateBinding Background}">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="DarkGoldenrod"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <Button.Background>
+                        <ImageBrush Stretch="Fill" TileMode="None" ImageSource="/settings_icon.png">
+                            <ImageBrush.RelativeTransform>
+                                <TransformGroup>
+                                    <ScaleTransform ScaleX="0.7" ScaleY="0.7"/>
+                                    <SkewTransform/>
+                                    <RotateTransform/>
+                                    <TranslateTransform X="0.15" Y="0.15"/>
+                                </TransformGroup>
+                            </ImageBrush.RelativeTransform>
+                        </ImageBrush>
+                    </Button.Background>
+                </Button>
+            </Border>
+            <TextBox x:Name="SelectExtensionTextBox" Grid.Column="1" HorizontalAlignment="Center" TextWrapping="Wrap" Text="Extension" VerticalAlignment="Center" Width="80" Height="30" VerticalContentAlignment="Center" ToolTip="Select files with given extension" TextChanged="SelectExtensionTextBox_TextChanged"/>
+        </Grid>
 
     </Grid>
 </Window>

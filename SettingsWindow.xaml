@@ -8,9 +8,12 @@
         Title="Settings" Height="600" Width="400">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
+            <RowDefinition Height="50"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
+        <Border BorderBrush="Black" BorderThickness="1" Margin="10,10,10,10">
+            <CheckBox x:Name="DeepSearchCheckBox" Content="Deep search" Margin="9,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Width="106" Click="DeepSearchCheckBox_Click"/>
+        </Border>
 
     </Grid>
 </Window>

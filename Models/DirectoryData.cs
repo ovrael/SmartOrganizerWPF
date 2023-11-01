@@ -1,5 +1,6 @@
 ﻿using SmartOrganizerWPF.Common;
 using SmartOrganizerWPF.Interfaces;
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,6 +16,23 @@ namespace SmartOrganizerWPF.Models
 
         public List<DirectoryData> Directories { get; private set; } = new List<DirectoryData>();
         public List<FileData> Files { get; private set; } = new List<FileData>();
+
+        public List<string> GetAllFiles()
+        {
+            List<string> files = new List<string>();
+
+            foreach (DirectoryData directory in Directories)
+            {
+                files.AddRange(directory.GetAllFiles());
+            }
+
+            foreach (FileData fileData in Files)
+            {
+                files.Add(fileData.FileInfo.FullName);
+            }
+
+            return files;
+        }
 
         public DirectoryData(string path)
         {
@@ -42,7 +60,6 @@ namespace SmartOrganizerWPF.Models
             }
 
             // Load files
-            //MessageBox.Show("Load files for: " + DirectoryInfo.FullName);
             string[] filePaths = Directory.GetFiles(DirectoryInfo.FullName);
 
             foreach (var filePath in filePaths)

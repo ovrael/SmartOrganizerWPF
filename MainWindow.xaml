@@ -23,7 +23,7 @@
             </LinearGradientBrush>
         </Grid.Background>
         <Grid.RowDefinitions>
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="100"/>
             <RowDefinition/>
             <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
@@ -35,7 +35,7 @@
             <Grid Grid.Column="1"/>
             <TreeView x:Name="ExplorerTreeView" Margin="10,10,10,10"/>
         </Grid>
-        <Rectangle Height="40" VerticalAlignment="Bottom" StrokeThickness="3" Grid.Row="1" Grid.RowSpan="2">
+        <Rectangle Height="40" VerticalAlignment="Center" StrokeThickness="3" Grid.Row="2">
             <UIElement.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
@@ -60,51 +60,75 @@
                 </LinearGradientBrush>
             </Rectangle.Fill>
         </Rectangle>
-        <Label x:Name="loadingLabel" Content="Loaded directory" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="2" Width="1580" Background="{x:Null}" FontWeight="Bold" FontSize="14"/>
+        <Label x:Name="loadingLabel" Content="Loaded directory" HorizontalAlignment="Center" Grid.Row="2" Width="1260" Background="{x:Null}" FontWeight="Bold" FontSize="14" Height="29" VerticalAlignment="Center"/>
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="317*"/>
-                <ColumnDefinition Width="100"/>
-                <ColumnDefinition Width="248*"/>
-                <ColumnDefinition Width="50"/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <ComboBox x:Name="SelectFolderComboBox" HorizontalAlignment="Center" VerticalAlignment="Center" Width="610" SelectionChanged="SelectFolderComboBox_SelectionChanged" Height="30" Background="{x:Null}" BorderBrush="{x:Null}"/>
-            <Border BorderBrush="Black" BorderThickness="1" CornerRadius="2,2,2,2" Background="#33CA0000" Grid.Column="3" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center" Width="30" MinWidth="30" MinHeight="30" MaxWidth="30" MaxHeight="30">
-                <Button x:Name="SettingsButton1" Content="" HorizontalAlignment="Center" VerticalAlignment="Center" Height="30" Width="30" Foreground="{x:Null}" RenderTransformOrigin="0.5,0.5" BorderBrush="{x:Null}" Click="SettingsButton_Click">
-                    <Button.Style>
-                        <Style TargetType="{x:Type Button}">
-                            <Setter Property="Background" Value="Green"/>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="{x:Type Button}">
-                                        <Border Background="{TemplateBinding Background}">
-                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                        </Border>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                            <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="DarkGoldenrod"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                    <Button.Background>
-                        <ImageBrush Stretch="Fill" TileMode="None" ImageSource="/settings_icon.png">
-                            <ImageBrush.RelativeTransform>
-                                <TransformGroup>
-                                    <ScaleTransform ScaleX="0.7" ScaleY="0.7"/>
-                                    <SkewTransform/>
-                                    <RotateTransform/>
-                                    <TranslateTransform X="0.15" Y="0.15"/>
-                                </TransformGroup>
-                            </ImageBrush.RelativeTransform>
-                        </ImageBrush>
-                    </Button.Background>
-                </Button>
-            </Border>
-            <TextBox x:Name="SelectExtensionTextBox" Grid.Column="1" HorizontalAlignment="Center" TextWrapping="Wrap" Text="Extension" VerticalAlignment="Center" Width="80" Height="30" VerticalContentAlignment="Center" ToolTip="Select files with given extension" TextChanged="SelectExtensionTextBox_TextChanged"/>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="20"/>
+                </Grid.RowDefinitions>
+                <ComboBox x:Name="SelectFolderComboBox" VerticalAlignment="Center" Width="620" SelectionChanged="SelectFolderComboBox_SelectionChanged" Height="20" Background="{x:Null}" BorderBrush="{x:Null}" VerticalContentAlignment="Center" BorderThickness="0,0,0,0"/>
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <ComboBox x:Name="FileTypesComboBox" Height="20" VerticalAlignment="Center" BorderThickness="0,0,0,0" Width="193"/>
+                    <TextBox x:Name="ExtensionsTextBox" TextWrapping="Wrap" Text="Additional extensions" Height="20" VerticalContentAlignment="Center" ToolTip="Select files with given extension" TextChanged="SelectExtensionTextBox_TextChanged" Grid.Column="1" VerticalAlignment="Center" Width="193"/>
+                    <Button x:Name="ScanButton" Grid.Column="2" Content="Scan" VerticalAlignment="Center" Width="193" Height="20"/>
+                </Grid>
+                <ProgressBar x:Name="LoadProgressBar" Height="10" VerticalAlignment="Center" Width="620" Grid.Row="2"/>
+            </Grid>
+            <Grid Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Border BorderBrush="Black" BorderThickness="1" Width="30" Height="30" CornerRadius="2,2,2,2" VerticalAlignment="Top" HorizontalAlignment="Right" MinWidth="30" MinHeight="30" MaxWidth="30" MaxHeight="30" Margin="0,10,10,0">
+                    <Border.Background>
+                        <SolidColorBrush Color="#FFF57373" Opacity="0.5"/>
+                    </Border.Background>
+                    <Button x:Name="SettingsButton1" Height="30" Foreground="{x:Null}" RenderTransformOrigin="0.5,0.5" BorderBrush="{x:Null}" Click="SettingsButton_Click" Width="30" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" HorizontalAlignment="Center" VerticalAlignment="Center" d:IsLocked="True">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}">
+                                <Setter Property="Background" Value="Green"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <Border Background="{TemplateBinding Background}">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="DarkGoldenrod"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <Button.Background>
+                            <ImageBrush Stretch="Fill" TileMode="None" ImageSource="/settings_icon.png">
+                                <ImageBrush.RelativeTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7"/>
+                                        <SkewTransform/>
+                                        <RotateTransform/>
+                                        <TranslateTransform X="0.15" Y="0.15"/>
+                                    </TransformGroup>
+                                </ImageBrush.RelativeTransform>
+                            </ImageBrush>
+                        </Button.Background>
+                    </Button>
+                </Border>
+                <Button x:Name="OrganizeButton" Content="RUN" HorizontalAlignment="Left" Margin="56,13,0,0" VerticalAlignment="Top" Height="64" Width="188" Background="#FF1FD25B" FontSize="24" Click="OrganizeButton_Click"/>
+            </Grid>
         </Grid>
 
     </Grid>

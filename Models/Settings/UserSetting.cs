@@ -8,8 +8,13 @@ namespace SmartOrganizerWPF.Models.Settings
         public string Description { get; private set; }
         public string Tooltip { get; private set; }
 
-        private IUserSettingType<T> type;
+        private readonly IUserSettingType<T> type;
         public T Value => type.CurrentValue;
+
+        public void SetValue(T newValue)
+        {
+            type.SetCurrentValue(newValue);
+        }
 
         public UserSetting(string name, string description, IUserSettingType<T> type)
         {

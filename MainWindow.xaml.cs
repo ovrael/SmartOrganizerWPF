@@ -1,6 +1,10 @@
 ﻿using Microsoft.WindowsAPICodePack.Dialogs;
+
+using SmartOrganizerWPF.Common;
 using SmartOrganizerWPF.Models;
+
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -24,8 +28,6 @@ namespace SmartOrganizerWPF
 
             // ADD ALSO USER DEFINED DIRECTORIES
             SelectFolderComboBox.Text = "Select folder";
-            SelectFolderComboBox.VerticalContentAlignment = VerticalAlignment.Center;
-            SelectFolderComboBox.HorizontalAlignment = HorizontalAlignment.Left;
             SelectFolderComboBox.Items.Add("Select folder from explorer...");
             SelectFolderComboBox.Items.Add(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic));
             SelectFolderComboBox.Items.Add(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures));
@@ -34,7 +36,7 @@ namespace SmartOrganizerWPF
             settingsWindow = null;
         }
 
-        private void SelectFolderComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void SelectFolderComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ComboBox comboBox = sender as ComboBox;
             if (comboBox == null || comboBox.SelectedItem == null) return;
@@ -56,12 +58,20 @@ namespace SmartOrganizerWPF
                 SelectFolderComboBox.Items.Add(dialog.FileName);
                 SelectFolderComboBox.SelectedIndex = SelectFolderComboBox.Items.Count - 1;
                 folderName = dialog.FileName;
+
+                dialog.Dispose();
+                dialog = null;
             }
 
             try
             {
-                LoadDirectory(folderName);
+                LoadProgressBar.IsIndeterminate = true;
+
+                await LoadDirectory(folderName);
+
                 oldFolderIndex = comboBox.SelectedIndex;
+                LoadProgressBar.IsIndeterminate = false;
+
             }
             catch (Exception ex)
             {
@@ -72,7 +82,7 @@ namespace SmartOrganizerWPF
             }
         }
 
-        private void LoadDirectory(string selectedFolderPath)
+        private async Task LoadDirectory(string selectedFolderPath)
         {
             if (selectedFolderPath == null) return;
             if (selectedFolderPath == string.Empty) return;
@@ -90,7 +100,10 @@ namespace SmartOrganizerWPF
 
         private void AddDirectoryTreeItem(DirectoryData directoryData, TreeViewItem parent = null)
         {
-            if (directoryData.Directories.Count == 0) return;
+            if (directoryData.Directories.Count == 0 && directoryData.Files.Count == 0)
+            {
+                return;
+            }
 
             foreach (var directory in directoryData.Directories)
             {
@@ -167,6 +180,20 @@ namespace SmartOrganizerWPF
 
 
             selectedExtension = textBox.Text;
+        }
+
+        private void OrganizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (selectedDirectory == null) return;
+
+            try
+            {
+                PythonManager.OrganizePictures(selectedDirectory.GetAllFiles());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
         }
     }
 }

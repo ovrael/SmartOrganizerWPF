@@ -4,7 +4,7 @@ namespace SmartOrganizerWPF.Models.Settings
 {
     internal class BoolSetting : IUserSettingType<bool>
     {
-        public bool DefaultValue { get; private set; }
+        public bool DefaultValue { get; init; }
         public bool CurrentValue { get; private set; }
 
         private string tooltipIfOff;

@@ -6,7 +6,6 @@
         public T CurrentValue { get; }
 
         public void SetCurrentValue(T value);
-
         public string CreateTooltip();
     }
 }

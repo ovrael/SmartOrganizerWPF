@@ -72,11 +72,6 @@ namespace SmartOrganizerWPF.Common
 
         public static void OrganizePictures(List<string> files)
         {
-            //for (int i = 0; i < files.Count; i++)
-            //{
-            //    files[i] = $"{files[i]}";
-            //}
-
             string args = JsonConvert.SerializeObject(files);
 
             string randomTempPath = Path.GetTempFileName();
@@ -100,11 +95,15 @@ namespace SmartOrganizerWPF.Common
                     if (stderr != null && stderr.Length > 0)
                     {
                         Debug.WriteLine("ERROR FROM SCRIPT: " + stderr);
+                        MessageBox.Show("Python script error: " + stderr);
+                        return;
                     }
 
                     string result = reader.ReadToEnd();
                     Debug.WriteLine("---- RESULT FROM SCRIPT ----");
                     Debug.WriteLine(result);
+
+                    MessageBox.Show("Python script printed: " + result);
                 }
             }
         }

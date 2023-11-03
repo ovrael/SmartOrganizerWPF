@@ -7,7 +7,8 @@ namespace SmartOrganizerWPF.Common
         public static UserSetting<bool> DeepSearch = new UserSetting<bool>(
             "Deep search",
             "Allow to search content of directories in selected folder",
-            new BoolSetting(false,
+            new BoolSetting(
+                true,
                 "Organize only files within selected folder",
                 "Organize files and content of directories within selected folder"
             ));

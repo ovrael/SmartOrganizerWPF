@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SmartOrganizerWPF"
         mc:Ignorable="d"
-        Title="Smart Organizer" Height="720" Width="1280" WindowStartupLocation="CenterScreen">
+        Title="Smart Organizer" Height="720" Width="1280" WindowStartupLocation="CenterScreen" MinWidth="600" MinHeight="500">
     <Grid>
         <Grid.Background>
             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -33,23 +33,30 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="10"/>
+                </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="40"/>
                     <RowDefinition Height="40"/>
                     <RowDefinition Height="20"/>
                 </Grid.RowDefinitions>
-                <ComboBox x:Name="SelectFolderComboBox" VerticalAlignment="Center" SelectionChanged="SelectFolderComboBox_SelectionChanged" Height="20" Background="{x:Null}" BorderBrush="{x:Null}" VerticalContentAlignment="Center" BorderThickness="0,0,0,0" Margin="10,0,10,0"/>
-                <Grid Grid.Row="1">
+                <ComboBox x:Name="SelectFolderComboBox" VerticalAlignment="Center" SelectionChanged="SelectFolderComboBox_SelectionChanged" Height="20" Background="{x:Null}" BorderBrush="{x:Null}" VerticalContentAlignment="Center" BorderThickness="0,0,0,0" Grid.Column="1"/>
+                <Grid Grid.Row="1" Grid.Column="1">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
+                        <ColumnDefinition Width="20"/>
                         <ColumnDefinition/>
+                        <ColumnDefinition Width="20"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <ComboBox x:Name="FileTypesComboBox" Height="20" VerticalAlignment="Center" BorderThickness="0,0,0,0" Width="193" SelectionChanged="FileTypesComboBox_SelectionChanged"/>
-                    <TextBox x:Name="ExtensionsTextBox" TextWrapping="Wrap" Text="Additional extensions" Height="20" VerticalContentAlignment="Center" ToolTip="Select files with given extension" TextChanged="SelectExtensionTextBox_TextChanged" Grid.Column="1" VerticalAlignment="Center" Width="193" GotFocus="ExtensionsTextBox_GotFocus" LostFocus="ExtensionsTextBox_LostFocus"/>
-                    <Button x:Name="ScanButton" Grid.Column="2" Content="Scan" VerticalAlignment="Center" Width="193" Height="20" Click="ScanButton_Click"/>
+                    <ComboBox x:Name="FileTypesComboBox" Height="20" VerticalAlignment="Center" BorderThickness="0,0,0,0" SelectionChanged="FileTypesComboBox_SelectionChanged"/>
+                    <TextBox x:Name="ExtensionsTextBox" TextWrapping="Wrap" Text="Additional extensions" Height="20" VerticalContentAlignment="Center" ToolTip="Select files with given extension" TextChanged="SelectExtensionTextBox_TextChanged" Grid.Column="1" VerticalAlignment="Center" GotFocus="ExtensionsTextBox_GotFocus" LostFocus="ExtensionsTextBox_LostFocus" Margin="20,0,20,0" Grid.ColumnSpan="3"/>
+                    <Button x:Name="ScanButton" Grid.Column="4" Content="Scan" VerticalAlignment="Center" Height="20" Click="ScanButton_Click" Background="#FF2BDE5F"/>
                 </Grid>
-                <ProgressBar x:Name="LoadProgressBar" Height="10" VerticalAlignment="Center" Width="620" Grid.Row="2"/>
+                <ProgressBar x:Name="LoadProgressBar" Height="10" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1"/>
             </Grid>
             <Grid Grid.Column="1">
                 <Grid.ColumnDefinitions>
@@ -93,7 +100,7 @@
                         </Button.Background>
                     </Button>
                 </Border>
-                <Button x:Name="OrganizeButton" Content="RUN" HorizontalAlignment="Left" Margin="56,13,0,0" VerticalAlignment="Top" Height="64" Width="188" Background="#FF1FD25B" FontSize="24" Click="OrganizeButton_Click"/>
+                <Button x:Name="OrganizeButton" Content="RUN" HorizontalAlignment="Center" VerticalAlignment="Center" Height="64" Width="188" Background="#FF1FD25B" FontSize="24" Click="OrganizeButton_Click"/>
             </Grid>
         </Grid>
 
@@ -102,8 +109,18 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Grid Grid.Column="1"/>
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="59*"/>
+                    <RowDefinition Height="505*"/>
+                </Grid.RowDefinitions>
+            </Grid>
             <TreeView x:Name="ExplorerTreeView" Margin="10,10,10,10"/>
+            <Border BorderBrush="Black" BorderThickness="1" Grid.Column="1" Margin="102,142,198,387">
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox Content="CheckBox" Click="CheckBox_Click"/>
+                </StackPanel>
+            </Border>
         </Grid>
         <Rectangle Height="40" VerticalAlignment="Center" StrokeThickness="3" Grid.Row="2">
             <Rectangle.RenderTransform>
@@ -130,7 +147,7 @@
                 </LinearGradientBrush>
             </Rectangle.Fill>
         </Rectangle>
-        <Label x:Name="loadingLabel" Content="Loaded directory" HorizontalAlignment="Center" Grid.Row="2" Width="1260" Background="{x:Null}" FontWeight="Bold" FontSize="14" Height="29" VerticalAlignment="Center"/>
+        <Label x:Name="loadingLabel" Content="Loaded directory" Grid.Row="2" Background="{x:Null}" FontWeight="Bold" FontSize="14" Height="29" VerticalAlignment="Center" Margin="10,0,10,0"/>
 
     </Grid>
 </Window>

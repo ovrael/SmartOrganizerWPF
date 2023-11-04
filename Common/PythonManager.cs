@@ -72,10 +72,10 @@ namespace SmartOrganizerWPF.Common
 
         public static void OrganizePictures(List<string> files)
         {
-            string args = JsonConvert.SerializeObject(files);
+            //string args = JsonConvert.SerializeObject(files);
 
             string randomTempPath = Path.GetTempFileName();
-            File.WriteAllText(randomTempPath, args);
+            File.WriteAllLines(randomTempPath, files);
 
             ProcessStartInfo start = new ProcessStartInfo();
             start.FileName = pythonExecPath;
@@ -85,6 +85,7 @@ namespace SmartOrganizerWPF.Common
             start.RedirectStandardError = true;
             start.CreateNoWindow = true;
 
+            string resultFilePath = string.Empty;
 
             using (Process process = Process.Start(start))
             {
@@ -99,13 +100,31 @@ namespace SmartOrganizerWPF.Common
                         return;
                     }
 
-                    string result = reader.ReadToEnd();
-                    Debug.WriteLine("---- RESULT FROM SCRIPT ----");
-                    Debug.WriteLine(result);
+                    resultFilePath = reader.ReadToEnd().Trim();
 
-                    MessageBox.Show("Python script printed: " + result);
+                    Debug.WriteLine("Path to file from Python script: " + resultFilePath);
+                    MessageBox.Show("Python script printed: " + resultFilePath);
                 }
             }
+
+            // Delete temporary files
+            if (File.Exists(randomTempPath))
+            {
+                File.Delete(randomTempPath);
+            }
+
+            if (File.Exists(resultFilePath))
+            {
+                DoWork(resultFilePath);
+
+                File.Delete(resultFilePath);
+            }
+        }
+
+        private static void DoWork(string path)
+        {
+            string fileContent = File.ReadAllText(path);
+            MessageBox.Show(fileContent);
         }
 
         internal static void PrintData()

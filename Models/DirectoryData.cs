@@ -6,8 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace SmartOrganizerWPF.Models
 {
@@ -66,19 +69,97 @@ namespace SmartOrganizerWPF.Models
 
         public StackPanel CreateTreeItemContent()
         {
-            StackPanel content = new StackPanel() { Orientation = Orientation.Horizontal };
+            if (DirectoryInfo == null)
+            {
+                return new StackPanel();
+            }
 
-            // Get icon
+            StackPanel content = new StackPanel() { Orientation = Orientation.Horizontal, Tag = $"TreeItemHeader_{DirectoryInfo.Name}" };
+
+            // Folder icon
             Uri uri = new Uri(Tools.ResourcesPath + "/Images/folder_icon.png");
             BitmapImage bitmap = new BitmapImage(uri);
-            Image image = new Image() { Source = bitmap, Width = 18, Height = 18 };
+            Image image = new Image() { Source = bitmap, Width = 18, Height = 18, Tag = $"TreeItemHeader_Image" };
             content.Children.Add(image);
 
-
-            Label label = new Label() { Content = DirectoryInfo.Name };
+            // Direcotry name
+            Label label = new Label() { Content = DirectoryInfo.Name, Tag = $"TreeItemHeader_Label" };
             content.Children.Add(label);
 
+            // Should be organized
+            CheckBox shouldOrganizeCheckBox = new CheckBox() { IsChecked = null, IsThreeState = false, VerticalAlignment = System.Windows.VerticalAlignment.Center, Tag = $"TreeItemHeader_CheckBox" };
+            shouldOrganizeCheckBox.Click += ShouldOrganizeCheckBox_Click;
+            content.Children.Add(shouldOrganizeCheckBox);
+
             return content;
+        }
+
+        private void ShouldOrganizeCheckBox_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            CheckBox checkBox = sender as CheckBox;
+            if (checkBox == null) { return; }
+
+            StackPanel treeItemHeader = checkBox.Parent as StackPanel;
+            if (treeItemHeader == null) { return; }
+
+            TreeViewItem treeItem = treeItemHeader.Parent as TreeViewItem;
+            if (treeItem == null) { return; }
+
+            ChangeChildrenStatus(treeItem, checkBox.IsChecked);
+            ChangeParentStatus(treeItem);
+        }
+
+        private void ChangeParentStatus(TreeViewItem treeItem)
+        {
+            TreeViewItem parent = treeItem.Parent as TreeViewItem;
+            if (parent == null) { return; }
+
+            bool? newStatus = false;
+            int uncheckedItems = 0;
+            for (int i = 0; i < parent.Items.Count; i++)
+            {
+                if (parent.Items[i] is not TreeViewItem parentChild) continue;
+                if (parentChild.Header is not StackPanel header) continue;
+                if (header.Children[^1] is not CheckBox statusCheckBox) continue;
+
+                if (statusCheckBox.IsChecked == null || statusCheckBox.IsChecked == false)
+                {
+                    uncheckedItems++;
+                }
+            }
+
+            if (uncheckedItems == 0)
+            {
+                newStatus = true;
+            }
+            else if (uncheckedItems < parent.Items.Count)
+            {
+                newStatus = null;
+            }
+            else
+            {
+                newStatus = false;
+            }
+
+            if (parent.Header is not StackPanel parentHeader) return;
+            if (parentHeader.Children[^1] is not CheckBox parentStatus) return;
+
+            parentStatus.IsChecked = newStatus;
+        }
+
+        private void ChangeChildrenStatus(TreeViewItem? treeItem, bool? newStatus)
+        {
+            if (treeItem == null) return;
+
+            for (int i = 0; i < treeItem.Items.Count; i++)
+            {
+                ChangeChildrenStatus(treeItem.Items[i] as TreeViewItem, newStatus);
+
+                if (treeItem.Header is not StackPanel header) continue;
+                if (header.Children[^1] is not CheckBox statusCheckBox) continue;
+
+                statusCheckBox.IsChecked = newStatus;
+            }
         }
     }
 }

@@ -74,36 +74,45 @@ namespace SmartOrganizerWPF.Models
                 return new StackPanel();
             }
 
-            StackPanel content = new StackPanel() { Orientation = Orientation.Horizontal, Tag = $"TreeItemHeader_{DirectoryInfo.Name}" };
+            StackPanel content = new StackPanel() { Orientation = Orientation.Horizontal, Tag = $"TreeItem_StackPanel_Directory_{DirectoryInfo.Name}" };
+
+            // Should be organized
+            CheckBox shouldOrganizeCheckBox = new CheckBox()
+            {
+                IsChecked = true,
+                IsThreeState = false,
+                VerticalAlignment = System.Windows.VerticalAlignment.Center,
+                Tag = $"TreeItem_CheckBox_Directory_{DirectoryInfo.Name}"
+            };
+            shouldOrganizeCheckBox.Click += ShouldOrganizeCheckBox_Click;
+            content.Children.Add(shouldOrganizeCheckBox);
 
             // Folder icon
-            Uri uri = new Uri(Tools.ResourcesPath + "/Images/folder_icon.png");
+            Uri uri = new Uri(Tools.ResourcesPath + "/Images/folder_icon_closed.png");
             BitmapImage bitmap = new BitmapImage(uri);
-            Image image = new Image() { Source = bitmap, Width = 18, Height = 18, Tag = $"TreeItemHeader_Image" };
+            Image image = new Image()
+            {
+                Source = bitmap,
+                Width = 18,
+                Height = 18,
+                Margin = new System.Windows.Thickness(5, 0, 0, 0),
+                Tag = $"TreeItem_Image_Directory_{DirectoryInfo.Name}"
+            };
             content.Children.Add(image);
 
             // Direcotry name
-            Label label = new Label() { Content = DirectoryInfo.Name, Tag = $"TreeItemHeader_Label" };
+            Label label = new Label() { Content = DirectoryInfo.Name, Tag = $"TreeItem_Label_Directory_{DirectoryInfo.Name}" };
             content.Children.Add(label);
 
-            // Should be organized
-            CheckBox shouldOrganizeCheckBox = new CheckBox() { IsChecked = null, IsThreeState = false, VerticalAlignment = System.Windows.VerticalAlignment.Center, Tag = $"TreeItemHeader_CheckBox" };
-            shouldOrganizeCheckBox.Click += ShouldOrganizeCheckBox_Click;
-            content.Children.Add(shouldOrganizeCheckBox);
 
             return content;
         }
 
         private void ShouldOrganizeCheckBox_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            CheckBox checkBox = sender as CheckBox;
-            if (checkBox == null) { return; }
-
-            StackPanel treeItemHeader = checkBox.Parent as StackPanel;
-            if (treeItemHeader == null) { return; }
-
-            TreeViewItem treeItem = treeItemHeader.Parent as TreeViewItem;
-            if (treeItem == null) { return; }
+            if (sender is not CheckBox checkBox) { return; }
+            if (checkBox.Parent is not StackPanel treeItemHeader) { return; }
+            if (treeItemHeader.Parent is not TreeViewItem treeItem) { return; }
 
             ChangeChildrenStatus(treeItem, checkBox.IsChecked);
             ChangeParentStatus(treeItem);
@@ -111,8 +120,7 @@ namespace SmartOrganizerWPF.Models
 
         private void ChangeParentStatus(TreeViewItem treeItem)
         {
-            TreeViewItem parent = treeItem.Parent as TreeViewItem;
-            if (parent == null) { return; }
+            if (treeItem.Parent is not TreeViewItem parent) { return; }
 
             bool? newStatus = false;
             int uncheckedItems = 0;
@@ -120,7 +128,7 @@ namespace SmartOrganizerWPF.Models
             {
                 if (parent.Items[i] is not TreeViewItem parentChild) continue;
                 if (parentChild.Header is not StackPanel header) continue;
-                if (header.Children[^1] is not CheckBox statusCheckBox) continue;
+                if (header.Children[0] is not CheckBox statusCheckBox) continue;
 
                 if (statusCheckBox.IsChecked == null || statusCheckBox.IsChecked == false)
                 {
@@ -142,7 +150,7 @@ namespace SmartOrganizerWPF.Models
             }
 
             if (parent.Header is not StackPanel parentHeader) return;
-            if (parentHeader.Children[^1] is not CheckBox parentStatus) return;
+            if (parentHeader.Children[0] is not CheckBox parentStatus) return;
 
             parentStatus.IsChecked = newStatus;
         }
@@ -153,10 +161,13 @@ namespace SmartOrganizerWPF.Models
 
             for (int i = 0; i < treeItem.Items.Count; i++)
             {
-                ChangeChildrenStatus(treeItem.Items[i] as TreeViewItem, newStatus);
+                if (treeItem.Items[i] is not TreeViewItem child) continue;
 
-                if (treeItem.Header is not StackPanel header) continue;
-                if (header.Children[^1] is not CheckBox statusCheckBox) continue;
+                ChangeChildrenStatus(child, newStatus);
+
+                if (child.Header is not StackPanel header) continue;
+
+                if (header.Children[0] is not CheckBox statusCheckBox) continue;
 
                 statusCheckBox.IsChecked = newStatus;
             }

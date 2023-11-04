@@ -8,6 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Bez tytułu.png" />
+    <None Remove="kostka cpu health used.png" />
+    <None Remove="kostka cpu health.png" />
     <None Remove="settings_icon.png" />
   </ItemGroup>
 

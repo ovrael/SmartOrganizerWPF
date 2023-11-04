@@ -205,10 +205,5 @@ namespace SmartOrganizerWPF
                 extensions.Text = "Additional extensions";
             }
         }
-
-        private void CheckBox_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("TEST");
-        }
     }
 }

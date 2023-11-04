@@ -1,9 +1,11 @@
 ﻿using Microsoft.WindowsAPICodePack.Dialogs;
 
 using SmartOrganizerWPF.Common;
+using SmartOrganizerWPF.Common.LoadFiles;
 using SmartOrganizerWPF.Models;
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -22,6 +24,8 @@ namespace SmartOrganizerWPF
         private bool settingsAreOpen = false;
         private SettingsWindow settingsWindow = null;
 
+        private ExplorerTree loadedFilesTree;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -34,6 +38,11 @@ namespace SmartOrganizerWPF
             SelectFolderComboBox.Items.Add(Environment.GetFolderPath(Environment.SpecialFolder.Personal));
             SelectFolderComboBox.Items.Add($"C:\\Users\\{Environment.UserName}\\Downloads");
             settingsWindow = null;
+
+            FileTypesComboBox.ItemsSource = Enum.GetValues(typeof(FileType)).Cast<FileType>();
+            FileTypesComboBox.SelectedIndex = 0;
+
+            loadedFilesTree = new ExplorerTree(ExplorerTreeView);
         }
 
         private async void SelectFolderComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -87,71 +96,20 @@ namespace SmartOrganizerWPF
             if (selectedFolderPath == null) return;
             if (selectedFolderPath == string.Empty) return;
             if (selectedFolderPath.ToLower() == "selected folder") return;
-            loadingLabel.Content = "Loading ...";
+            loadingLabel.Content = "Loading... ";
 
-            selectedDirectory = new DirectoryData(selectedFolderPath);
+            LoadFilesManager.SetAdditionalExtensions(ExtensionsTextBox.Text);
 
-            ExplorerTreeView.Items.Clear();
+            await Task.Run(() =>
+            {
+                selectedDirectory = new DirectoryData(selectedFolderPath);
+            });
 
-            AddDirectoryTreeItem(selectedDirectory);
+            if (selectedDirectory == null || loadedFilesTree == null) return;
+
+            loadedFilesTree.BuildTree(selectedDirectory);
 
             loadingLabel.Content = selectedFolderPath;
-        }
-
-        private void AddDirectoryTreeItem(DirectoryData directoryData, TreeViewItem parent = null)
-        {
-            if (directoryData.Directories.Count == 0 && directoryData.Files.Count == 0)
-            {
-                return;
-            }
-
-            foreach (var directory in directoryData.Directories)
-            {
-                TreeViewItem directoryTreeItem = new TreeViewItem();
-                directoryTreeItem.Header = directory.CreateTreeItemContent();
-                directoryTreeItem.Tag = directory.DirectoryInfo.FullName;
-                directoryTreeItem.FontWeight = FontWeights.Normal;
-
-
-                if (parent == null)
-                {
-                    ExplorerTreeView.Items.Add(directoryTreeItem);
-                }
-                else
-                {
-                    parent.Items.Add(directoryTreeItem);
-                }
-
-                AddDirectoryTreeItem(directory, directoryTreeItem);
-
-                foreach (var file in directory.Files)
-                {
-                    AddFileTreeItem(file, directoryTreeItem);
-                }
-            }
-
-            if (parent == null)
-            {
-                foreach (var file in directoryData.Files)
-                {
-                    TreeViewItem fileTreeItem = new TreeViewItem();
-                    fileTreeItem.Header = file.CreateTreeItemContent();
-                    fileTreeItem.Tag = file.FileInfo.FullName;
-                    fileTreeItem.FontWeight = FontWeights.Normal;
-
-                    ExplorerTreeView.Items.Add(fileTreeItem);
-                }
-            }
-        }
-
-        private void AddFileTreeItem(FileData fileData, TreeViewItem parent)
-        {
-            TreeViewItem fileTreeItem = new TreeViewItem();
-            fileTreeItem.Header = fileData.CreateTreeItemContent();
-            fileTreeItem.Tag = fileData.FileInfo.FullName;
-            fileTreeItem.FontWeight = FontWeights.Normal;
-
-            parent.Items.Add(fileTreeItem);
         }
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
@@ -193,6 +151,58 @@ namespace SmartOrganizerWPF
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString());
+            }
+        }
+
+        private void FileTypesComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is not ComboBox comboBox || comboBox.SelectedIndex == -1) return;
+
+            LoadFilesManager.CurrentFileType = (FileType)comboBox.SelectedItem;
+        }
+
+        private async void ScanButton_Click(object sender, RoutedEventArgs e)
+        {
+            string? scanPath = SelectFolderComboBox.SelectedItem as string;
+            if (scanPath == null || scanPath.Length == 0) return;
+
+            try
+            {
+                LoadProgressBar.IsIndeterminate = true;
+
+                await LoadDirectory(scanPath);
+
+                oldFolderIndex = SelectFolderComboBox.SelectedIndex;
+                LoadProgressBar.IsIndeterminate = false;
+
+            }
+            catch (Exception ex)
+            {
+                SelectFolderComboBox.SelectedIndex = oldFolderIndex;
+
+                MessageBox.Show(ex.ToString());
+            }
+        }
+
+        private void ExtensionsTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            TextBox? extensions = sender as TextBox;
+            if (extensions == null) return;
+
+            if (extensions.Text == "Additional extensions")
+            {
+                extensions.Text = string.Empty;
+            }
+        }
+
+        private void ExtensionsTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            TextBox? extensions = sender as TextBox;
+            if (extensions == null) return;
+
+            if (extensions.Text.Length == 0)
+            {
+                extensions.Text = "Additional extensions";
             }
         }
     }

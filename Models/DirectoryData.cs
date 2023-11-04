@@ -1,4 +1,5 @@
 ﻿using SmartOrganizerWPF.Common;
+using SmartOrganizerWPF.Common.LoadFiles;
 using SmartOrganizerWPF.Interfaces;
 
 using System;
@@ -60,12 +61,7 @@ namespace SmartOrganizerWPF.Models
             }
 
             // Load files
-            string[] filePaths = Directory.GetFiles(DirectoryInfo.FullName);
-
-            foreach (var filePath in filePaths)
-            {
-                Files.Add(new FileData(filePath));
-            }
+            Files = LoadFilesManager.LoadFiles(DirectoryInfo.FullName);
         }
 
         public StackPanel CreateTreeItemContent()

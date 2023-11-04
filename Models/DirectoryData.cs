@@ -21,23 +21,6 @@ namespace SmartOrganizerWPF.Models
         public List<DirectoryData> Directories { get; private set; } = new List<DirectoryData>();
         public List<FileData> Files { get; private set; } = new List<FileData>();
 
-        public List<string> GetAllFiles()
-        {
-            List<string> files = new List<string>();
-
-            foreach (DirectoryData directory in Directories)
-            {
-                files.AddRange(directory.GetAllFiles());
-            }
-
-            foreach (FileData fileData in Files)
-            {
-                files.Add(fileData.FileInfo.FullName);
-            }
-
-            return files;
-        }
-
         public DirectoryData(string path)
         {
             DirectoryInfo = new DirectoryInfo(path);
@@ -65,6 +48,24 @@ namespace SmartOrganizerWPF.Models
 
             // Load files
             Files = LoadFilesManager.LoadFiles(DirectoryInfo.FullName);
+        }
+
+        public List<string> GetAllFiles()
+        {
+            List<string> files = new List<string>();
+
+            foreach (DirectoryData directory in Directories)
+            {
+                files.AddRange(directory.GetAllFiles());
+            }
+
+            foreach (FileData fileData in Files)
+            {
+                if (fileData.IsChecked)
+                    files.Add(fileData.FileInfo.FullName);
+            }
+
+            return files;
         }
 
         public StackPanel CreateTreeItemContent()
@@ -114,13 +115,22 @@ namespace SmartOrganizerWPF.Models
             if (checkBox.Parent is not StackPanel treeItemHeader) { return; }
             if (treeItemHeader.Parent is not TreeViewItem treeItem) { return; }
 
+            if (checkBox.IsChecked == false)
+            {
+                treeItemHeader.Opacity = 0.5;
+            }
+            else
+            {
+                treeItemHeader.Opacity = 1.0;
+            }
+
             ChangeChildrenStatus(treeItem, checkBox.IsChecked);
             ChangeParentStatus(treeItem);
         }
 
         private void ChangeParentStatus(TreeViewItem treeItem)
         {
-            if (treeItem.Parent is not TreeViewItem parent) { return; }
+            if (treeItem.Parent is not TreeViewItem parent) return;
 
             bool? newStatus = false;
             int uncheckedItems = 0;
@@ -153,11 +163,22 @@ namespace SmartOrganizerWPF.Models
             if (parentHeader.Children[0] is not CheckBox parentStatus) return;
 
             parentStatus.IsChecked = newStatus;
+            if (parentStatus.IsChecked == false)
+            {
+                parentHeader.Opacity = 0.5;
+            }
+            else
+            {
+                parentHeader.Opacity = 1.0;
+            }
+
+            ChangeParentStatus(parent);
         }
 
         private void ChangeChildrenStatus(TreeViewItem? treeItem, bool? newStatus)
         {
             if (treeItem == null) return;
+
 
             for (int i = 0; i < treeItem.Items.Count; i++)
             {
@@ -166,6 +187,21 @@ namespace SmartOrganizerWPF.Models
                 ChangeChildrenStatus(child, newStatus);
 
                 if (child.Header is not StackPanel header) continue;
+
+                if (newStatus == false)
+                {
+                    header.Opacity = 0.5;
+                }
+                else
+                {
+                    header.Opacity = 1.0;
+                }
+
+                if (child.Tag is FileData fileData)
+                {
+                    fileData.IsChecked = newStatus.GetValueOrDefault();
+                }
+
 
                 if (header.Children[0] is not CheckBox statusCheckBox) continue;
 

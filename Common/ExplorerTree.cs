@@ -1,15 +1,9 @@
-﻿using Newtonsoft.Json;
-
-using SmartOrganizerWPF.Models;
+﻿using SmartOrganizerWPF.Models;
 
 using System;
-using System.Diagnostics;
-using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace SmartOrganizerWPF.Common
 {
@@ -72,7 +66,7 @@ namespace SmartOrganizerWPF.Common
                 {
                     TreeViewItem fileTreeItem = new TreeViewItem();
                     fileTreeItem.Header = file.CreateTreeItemContent();
-                    fileTreeItem.Tag = $"TreeItem_File_{file.FileInfo.Name}";
+                    fileTreeItem.Tag = file;
                     fileTreeItem.FontWeight = FontWeights.Normal;
 
                     treeView.Items.Add(fileTreeItem);
@@ -92,12 +86,9 @@ namespace SmartOrganizerWPF.Common
             e.Handled = true;
         }
 
-        private void UpdateFolderIcon(object sender, bool isOpen)
+        private static void UpdateFolderIcon(object sender, bool isOpen)
         {
             if (sender is not TreeViewItem currentFolder) return;
-
-            Debug.WriteLine("Update folder icon for: " + currentFolder.Tag + " is focused? " + currentFolder.IsFocused);
-
             if (currentFolder.Header is not StackPanel header) return;
             if (header.Children[1] is not Image folderImage) return;
 
@@ -108,11 +99,11 @@ namespace SmartOrganizerWPF.Common
             folderImage.Source = bitmap;
         }
 
-        private void AddFileTreeItem(FileData fileData, TreeViewItem parent)
+        private static void AddFileTreeItem(FileData fileData, TreeViewItem parent)
         {
             TreeViewItem fileTreeItem = new TreeViewItem();
             fileTreeItem.Header = fileData.CreateTreeItemContent();
-            fileTreeItem.Tag = $"TreeItem_File_{fileData.FileInfo.Name}";
+            fileTreeItem.Tag = fileData;
             fileTreeItem.FontWeight = FontWeights.Normal;
 
             parent.Items.Add(fileTreeItem);

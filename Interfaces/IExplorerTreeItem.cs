@@ -9,6 +9,7 @@ namespace SmartOrganizerWPF.Interfaces
 {
     public interface IExplorerTreeItem
     {
+        //public bool IsChecked { get; set; }
         public StackPanel CreateTreeItemContent();
     }
 }

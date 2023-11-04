@@ -15,6 +15,7 @@ namespace SmartOrganizerWPF.Models
 {
     public class FileData : IExplorerTreeItem
     {
+        public bool IsChecked { get; set; } = true;
         public FileInfo FileInfo { get; private set; }
 
         public FileData(string path)
@@ -62,6 +63,19 @@ namespace SmartOrganizerWPF.Models
             if (checkBox.Parent is not StackPanel treeItemHeader) return;
             if (treeItemHeader.Parent is not TreeViewItem treeItem) return;
 
+            if (treeItem.Tag is FileData fileData)
+            {
+                fileData.IsChecked = checkBox.IsChecked.GetValueOrDefault();
+                if (fileData.IsChecked)
+                {
+                    treeItemHeader.Opacity = 1.0;
+                }
+                else
+                {
+                    treeItemHeader.Opacity = 0.5;
+                }
+            }
+
             ChangeParentStatus(treeItem);
         }
 
@@ -100,6 +114,17 @@ namespace SmartOrganizerWPF.Models
             if (parentHeader.Children[0] is not CheckBox parentStatus) return;
 
             parentStatus.IsChecked = newStatus;
+
+            if (parentStatus.IsChecked == false)
+            {
+                parentHeader.Opacity = 0.5;
+            }
+            else
+            {
+                parentHeader.Opacity = 1.0;
+            }
+
+            ChangeParentStatus(parent);
         }
     }
 }

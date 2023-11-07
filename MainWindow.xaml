@@ -32,7 +32,7 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Grid d:IsLocked="True">
+            <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="10"/>
                     <ColumnDefinition/>
@@ -53,7 +53,7 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <ComboBox x:Name="FileTypesComboBox" Height="20" VerticalAlignment="Center" BorderThickness="0,0,0,0" SelectionChanged="FileTypesComboBox_SelectionChanged"/>
-                    <TextBox x:Name="ExtensionsTextBox" TextWrapping="Wrap" Text="Additional extensions" Height="20" VerticalContentAlignment="Center" ToolTip="Select files with given extension" TextChanged="SelectExtensionTextBox_TextChanged" Grid.Column="1" VerticalAlignment="Center" GotFocus="ExtensionsTextBox_GotFocus" LostFocus="ExtensionsTextBox_LostFocus" Margin="20,0,20,0" Grid.ColumnSpan="3"/>
+                    <TextBox x:Name="ExtensionsTextBox" TextWrapping="Wrap" Text="Additional extensions" Height="20" VerticalContentAlignment="Center" ToolTip="Select files with given extension" Grid.Column="1" VerticalAlignment="Center" GotFocus="ExtensionsTextBox_GotFocus" LostFocus="ExtensionsTextBox_LostFocus" Margin="20,0,20,0" Grid.ColumnSpan="3"/>
                     <Button x:Name="ScanButton" Grid.Column="4" Content="Scan" VerticalAlignment="Center" Height="20" Click="ScanButton_Click" Background="#FF2BDE5F"/>
                 </Grid>
                 <ProgressBar x:Name="LoadProgressBar" Height="10" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1"/>
@@ -100,7 +100,7 @@
                         </Button.Background>
                     </Button>
                 </Border>
-                <Button x:Name="OrganizeButton" Content="RUN" HorizontalAlignment="Center" VerticalAlignment="Center" Height="64" Width="188" Background="#FF1FD25B" FontSize="24" Click="OrganizeButton_Click"/>
+                <Button x:Name="OrganizeButton" Content="Run" HorizontalAlignment="Center" VerticalAlignment="Center" Height="64" Width="188" Background="#FF1FD25B" FontSize="24" Click="OrganizeButton_Click"/>
             </Grid>
         </Grid>
 

@@ -72,8 +72,6 @@ namespace SmartOrganizerWPF.Common
 
         public static void OrganizePictures(List<string> files)
         {
-            //string args = JsonConvert.SerializeObject(files);
-
             string randomTempPath = Path.GetTempFileName();
             File.WriteAllLines(randomTempPath, files);
 
@@ -97,27 +95,36 @@ namespace SmartOrganizerWPF.Common
                     {
                         Debug.WriteLine("ERROR FROM SCRIPT: " + stderr);
                         MessageBox.Show("Python script error: " + stderr);
+                        ClearTempFiles(randomTempPath, resultFilePath);
                         return;
                     }
 
                     resultFilePath = reader.ReadToEnd().Trim();
 
                     Debug.WriteLine("Path to file from Python script: " + resultFilePath);
-                    MessageBox.Show("Python script printed: " + resultFilePath);
+                    //MessageBox.Show("Python script printed: " + resultFilePath);
                 }
             }
 
-            // Delete temporary files
-            if (File.Exists(randomTempPath))
-            {
-                File.Delete(randomTempPath);
-            }
 
             if (File.Exists(resultFilePath))
             {
                 DoWork(resultFilePath);
+            }
 
-                File.Delete(resultFilePath);
+            // Delete temporary files
+            ClearTempFiles(randomTempPath, resultFilePath);
+        }
+
+        private static void ClearTempFiles(params string[] tempFiles)
+        {
+            foreach (var tempFile in tempFiles)
+            {
+                // Delete temporary files
+                if (File.Exists(tempFile))
+                {
+                    File.Delete(tempFile);
+                }
             }
         }
 

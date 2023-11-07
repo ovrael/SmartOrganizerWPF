@@ -6,18 +6,16 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace SmartOrganizerWPF.Models
 {
     public class DirectoryData : IExplorerTreeItem
     {
+        public bool IsLoaded { get; set; } = false;
+        public bool? IsChecked { get; set; } = true;
         public DirectoryInfo? DirectoryInfo { get; private set; }
-
         public List<DirectoryData> Directories { get; private set; } = new List<DirectoryData>();
         public List<FileData> Files { get; private set; } = new List<FileData>();
 
@@ -30,11 +28,9 @@ namespace SmartOrganizerWPF.Models
             // Load directories
             if (UserSettings.DeepSearch.Value)
             {
-                string[] directoryPaths = Array.Empty<string>();
-
                 try
                 {
-                    directoryPaths = Directory.GetDirectories(DirectoryInfo.FullName);
+                    string[] directoryPaths = Directory.GetDirectories(DirectoryInfo.FullName);
                     foreach (var directoryPath in directoryPaths)
                     {
                         Directories.Add(new DirectoryData(directoryPath));
@@ -75,12 +71,17 @@ namespace SmartOrganizerWPF.Models
                 return new StackPanel();
             }
 
-            StackPanel content = new StackPanel() { Orientation = Orientation.Horizontal, Tag = $"TreeItem_StackPanel_Directory_{DirectoryInfo.Name}" };
+            StackPanel content = new StackPanel()
+            {
+                Orientation = Orientation.Horizontal,
+                Tag = $"TreeItem_StackPanel_Directory_{DirectoryInfo.Name}",
+                Opacity = (IsChecked == null || IsChecked == true) ? 1 : 0.5
+            };
 
             // Should be organized
             CheckBox shouldOrganizeCheckBox = new CheckBox()
             {
-                IsChecked = true,
+                IsChecked = this.IsChecked,
                 IsThreeState = false,
                 VerticalAlignment = System.Windows.VerticalAlignment.Center,
                 Tag = $"TreeItem_CheckBox_Directory_{DirectoryInfo.Name}"
@@ -175,37 +176,59 @@ namespace SmartOrganizerWPF.Models
             ChangeParentStatus(parent);
         }
 
+        private void ChangeUnloadedStatus(bool? newStatus)
+        {
+            IsChecked = newStatus;
+            foreach (var childDirectory in Directories)
+            {
+                childDirectory.ChangeUnloadedStatus(newStatus);
+            }
+
+            foreach (var file in Files)
+            {
+                file.IsChecked = newStatus.GetValueOrDefault();
+            }
+        }
+
         private void ChangeChildrenStatus(TreeViewItem? treeItem, bool? newStatus)
         {
             if (treeItem == null) return;
+            if (treeItem.Tag is not DirectoryData directory) return;
 
 
-            for (int i = 0; i < treeItem.Items.Count; i++)
+            if (!directory.IsLoaded)
             {
-                if (treeItem.Items[i] is not TreeViewItem child) continue;
-
-                ChangeChildrenStatus(child, newStatus);
-
-                if (child.Header is not StackPanel header) continue;
-
-                if (newStatus == false)
+                directory.ChangeUnloadedStatus(newStatus);
+            }
+            else
+            {
+                for (int i = 0; i < treeItem.Items.Count; i++)
                 {
-                    header.Opacity = 0.5;
+                    if (treeItem.Items[i] is not TreeViewItem child) continue;
+
+                    ChangeChildrenStatus(child, newStatus);
+
+                    if (child.Header is not StackPanel header) continue;
+
+                    if (newStatus == false)
+                    {
+                        header.Opacity = 0.5;
+                    }
+                    else
+                    {
+                        header.Opacity = 1.0;
+                    }
+
+                    if (child.Tag is FileData fileData)
+                    {
+                        fileData.IsChecked = newStatus.GetValueOrDefault();
+                    }
+
+
+                    if (header.Children[0] is not CheckBox statusCheckBox) continue;
+
+                    statusCheckBox.IsChecked = newStatus;
                 }
-                else
-                {
-                    header.Opacity = 1.0;
-                }
-
-                if (child.Tag is FileData fileData)
-                {
-                    fileData.IsChecked = newStatus.GetValueOrDefault();
-                }
-
-
-                if (header.Children[0] is not CheckBox statusCheckBox) continue;
-
-                statusCheckBox.IsChecked = newStatus;
             }
         }
     }

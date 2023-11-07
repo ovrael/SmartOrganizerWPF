@@ -24,7 +24,7 @@ namespace SmartOrganizerWPF
         private bool settingsAreOpen = false;
         private SettingsWindow settingsWindow = null;
 
-        private ExplorerTree loadedFilesTree;
+        private readonly ExplorerTree loadedFilesTree;
 
         public MainWindow()
         {

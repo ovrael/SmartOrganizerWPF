@@ -9,7 +9,7 @@ namespace SmartOrganizerWPF.Common
 {
     internal class ExplorerTree
     {
-        private TreeView treeView;
+        private readonly TreeView treeView;
 
         public ExplorerTree(TreeView treeView)
         {
@@ -29,13 +29,15 @@ namespace SmartOrganizerWPF.Common
                 return;
             }
 
+            directoryData.IsLoaded = true;
+
             foreach (var directory in directoryData.Directories)
             {
                 TreeViewItem directoryTreeItem = new TreeViewItem
                 {
                     FontWeight = FontWeights.Normal,
                     Header = directory.CreateTreeItemContent(),
-                    Tag = $"TreeItem_Directory_{directory.DirectoryInfo.Name}",
+                    Tag = directory
                 };
 
                 directoryTreeItem.Expanded += DirectoryTreeItem_Expanded;
@@ -50,14 +52,17 @@ namespace SmartOrganizerWPF.Common
                     parent.Items.Add(directoryTreeItem);
                 }
 
-                AddDirectoryTreeItem(directory, directoryTreeItem);
+                //AddDirectoryTreeItem(directory, directoryTreeItem);
 
-
-                foreach (var file in directory.Files)
+                if (directory.Files.Count > 0)
                 {
-                    AddFileTreeItem(file, directoryTreeItem);
+                    directoryTreeItem.Items.Add("placeholder");
                 }
 
+                //foreach (var file in directory.Files)
+                //{
+                //    AddFileTreeItem(file, directoryTreeItem);
+                //}
             }
 
             if (parent == null)
@@ -82,6 +87,26 @@ namespace SmartOrganizerWPF.Common
 
         private void DirectoryTreeItem_Expanded(object sender, RoutedEventArgs e)
         {
+            if (sender is not TreeViewItem currentFolder) return;
+
+            if (currentFolder.Tag is DirectoryData directoryData)
+            {
+                if (!directoryData.IsLoaded)
+                {
+                    currentFolder.Items.Clear();
+                    foreach (var directory in directoryData.Directories)
+                    {
+                        AddDirectoryTreeItem(directory, currentFolder);
+                    }
+
+                    foreach (var file in directoryData.Files)
+                    {
+                        AddFileTreeItem(file, currentFolder);
+                    }
+                    directoryData.IsLoaded = true;
+                }
+            }
+
             UpdateFolderIcon(sender, true);
             e.Handled = true;
         }

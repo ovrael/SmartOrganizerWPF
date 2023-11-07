@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Media.Imaging;
-
-using SmartOrganizerWPF.Common;
+﻿using SmartOrganizerWPF.Common;
 using SmartOrganizerWPF.Interfaces;
+using System.IO;
+using System.Windows.Controls;
 
 namespace SmartOrganizerWPF.Models
 {
@@ -18,6 +10,7 @@ namespace SmartOrganizerWPF.Models
         public bool IsChecked { get; set; } = true;
         public FileInfo FileInfo { get; private set; }
 
+        public FileData() { }
         public FileData(string path)
         {
             FileInfo = new FileInfo(path);
@@ -25,12 +18,17 @@ namespace SmartOrganizerWPF.Models
 
         public StackPanel CreateTreeItemContent()
         {
-            StackPanel content = new StackPanel() { Orientation = Orientation.Horizontal, Tag = $"TreeItem_StackPanel_File_{FileInfo.Name}" };
+            StackPanel content = new StackPanel()
+            {
+                Orientation = Orientation.Horizontal,
+                Tag = $"TreeItem_StackPanel_File_{FileInfo.Name}",
+                Opacity = IsChecked ? 1 : 0.5
+            };
 
             // Should organize checkbox
             CheckBox shouldOrganizeCheckBox = new CheckBox()
             {
-                IsChecked = true,
+                IsChecked = this.IsChecked,
                 IsThreeState = false,
                 VerticalAlignment = System.Windows.VerticalAlignment.Center,
                 Tag = $"TreeItem_CheckBox_File_{FileInfo.Name}"

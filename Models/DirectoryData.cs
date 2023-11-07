@@ -15,6 +15,8 @@ namespace SmartOrganizerWPF.Models
     {
         public bool IsLoaded { get; set; } = false;
         public bool? IsChecked { get; set; } = true;
+        public string FullPath => DirectoryInfo.FullName;
+
         public DirectoryInfo? DirectoryInfo { get; private set; }
         public List<DirectoryData> Directories { get; private set; } = new List<DirectoryData>();
         public List<FileData> Files { get; private set; } = new List<FileData>();
@@ -57,7 +59,7 @@ namespace SmartOrganizerWPF.Models
 
             foreach (FileData fileData in Files)
             {
-                if (fileData.IsChecked)
+                if (fileData != null && fileData.IsChecked == true)
                     files.Add(fileData.FileInfo.FullName);
             }
 
@@ -129,7 +131,7 @@ namespace SmartOrganizerWPF.Models
             ChangeParentStatus(treeItem);
         }
 
-        private void ChangeParentStatus(TreeViewItem treeItem)
+        public void ChangeParentStatus(TreeViewItem treeItem)
         {
             if (treeItem.Parent is not TreeViewItem parent) return;
 
@@ -190,7 +192,7 @@ namespace SmartOrganizerWPF.Models
             }
         }
 
-        private void ChangeChildrenStatus(TreeViewItem? treeItem, bool? newStatus)
+        public void ChangeChildrenStatus(TreeViewItem? treeItem, bool? newStatus)
         {
             if (treeItem == null) return;
             if (treeItem.Tag is not DirectoryData directory) return;

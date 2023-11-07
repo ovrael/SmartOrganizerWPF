@@ -101,8 +101,7 @@ namespace SmartOrganizerWPF.Common
 
                     resultFilePath = reader.ReadToEnd().Trim();
 
-                    Debug.WriteLine("Path to file from Python script: " + resultFilePath);
-                    //MessageBox.Show("Python script printed: " + resultFilePath);
+                    //Debug.WriteLine("Path to file from Python script: " + resultFilePath);
                 }
             }
 

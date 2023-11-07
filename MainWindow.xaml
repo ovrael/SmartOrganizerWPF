@@ -113,33 +113,6 @@
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <Border BorderBrush="Black" BorderThickness="1" Margin="53,193,138,263">
-                    <StackPanel Orientation="Horizontal">
-                        <CheckBox Content="CheckBox"/>
-                        <Border BorderThickness="1" Width="100" Margin="34,0,0,0">
-                            <Border.Background>
-                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                    <GradientStop Color="Black"/>
-                                    <GradientStop Color="#FFF51111" Offset="1"/>
-                                </LinearGradientBrush>
-                            </Border.Background>
-                            <Border.BorderBrush>
-                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                    <GradientStop Color="Black"/>
-                                    <GradientStop Color="#FF903535" Offset="1"/>
-                                </LinearGradientBrush>
-                            </Border.BorderBrush>
-                        </Border>
-                        <Border BorderBrush="Black" BorderThickness="1" Width="100">
-                            <Border.Background>
-                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                    <GradientStop Color="Black" Offset="1"/>
-                                    <GradientStop Color="#FF1DE861" Offset="0"/>
-                                </LinearGradientBrush>
-                            </Border.Background>
-                        </Border>
-                    </StackPanel>
-                </Border>
             </Grid>
             <TreeView x:Name="ExplorerTreeView" Margin="10,10,10,10"/>
         </Grid>

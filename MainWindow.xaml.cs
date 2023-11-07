@@ -37,6 +37,7 @@ namespace SmartOrganizerWPF
             SelectFolderComboBox.Items.Add(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures));
             SelectFolderComboBox.Items.Add(Environment.GetFolderPath(Environment.SpecialFolder.Personal));
             SelectFolderComboBox.Items.Add($"C:\\Users\\{Environment.UserName}\\Downloads");
+            SelectFolderComboBox.Items.Add($"D:\\_Test");
             settingsWindow = null;
 
             FileTypesComboBox.ItemsSource = Enum.GetValues(typeof(FileType)).Cast<FileType>();

@@ -1,5 +1,6 @@
 ﻿using SmartOrganizerWPF.Common;
 using SmartOrganizerWPF.Interfaces;
+
 using System.IO;
 using System.Windows.Controls;
 
@@ -7,8 +8,11 @@ namespace SmartOrganizerWPF.Models
 {
     public class FileData : IExplorerTreeItem
     {
-        public bool IsChecked { get; set; } = true;
+        public bool? IsChecked { get; set; } = true;
         public FileInfo FileInfo { get; private set; }
+
+        public string FullPath => FileInfo.FullName;
+
 
         public FileData() { }
         public FileData(string path)
@@ -22,7 +26,7 @@ namespace SmartOrganizerWPF.Models
             {
                 Orientation = Orientation.Horizontal,
                 Tag = $"TreeItem_StackPanel_File_{FileInfo.Name}",
-                Opacity = IsChecked ? 1 : 0.5
+                Opacity = (IsChecked == null || IsChecked == true) ? 1 : 0.5
             };
 
             // Should organize checkbox
@@ -64,20 +68,13 @@ namespace SmartOrganizerWPF.Models
             if (treeItem.Tag is FileData fileData)
             {
                 fileData.IsChecked = checkBox.IsChecked.GetValueOrDefault();
-                if (fileData.IsChecked)
-                {
-                    treeItemHeader.Opacity = 1.0;
-                }
-                else
-                {
-                    treeItemHeader.Opacity = 0.5;
-                }
+                treeItemHeader.Opacity = (fileData.IsChecked == null || fileData.IsChecked == true) ? 1 : 0.5;
             }
 
             ChangeParentStatus(treeItem);
         }
 
-        private void ChangeParentStatus(TreeViewItem treeItem)
+        public void ChangeParentStatus(TreeViewItem treeItem)
         {
             if (treeItem.Parent is not TreeViewItem parent) return;
 

@@ -3,19 +3,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-
-using Newtonsoft.Json;
 
 namespace SmartOrganizerWPF.Common
 {
     public static class PythonManager
     {
-        private static string pythonExecPath = string.Empty;
+        private static readonly string pythonExecPath = string.Empty;
 
-        private static string organizePicturesScriptPath = string.Empty;
+        private static readonly string organizePicturesScriptPath = string.Empty;
 
         private static class Features
         {
@@ -70,14 +66,20 @@ namespace SmartOrganizerWPF.Common
             return scriptPath;
         }
 
-        public static void OrganizePictures(List<string> files)
+        public static string[] OrganizePictures(List<string> files)
         {
+            if (!File.Exists(organizePicturesScriptPath))
+            {
+                MessageBox.Show("Oops... Something went wrong. Cannot localize script for organizing pictures");
+                return Array.Empty<string>();
+            }
+
             string randomTempPath = Path.GetTempFileName();
             File.WriteAllLines(randomTempPath, files);
 
             ProcessStartInfo start = new ProcessStartInfo();
             start.FileName = pythonExecPath;
-            start.Arguments = string.Format("{0} {1}", organizePicturesScriptPath, randomTempPath);
+            start.Arguments = $"\"{organizePicturesScriptPath}\" {randomTempPath}";
             start.UseShellExecute = false;
             start.RedirectStandardOutput = true;
             start.RedirectStandardError = true;
@@ -96,8 +98,9 @@ namespace SmartOrganizerWPF.Common
                         Debug.WriteLine("ERROR FROM SCRIPT: " + stderr);
                         MessageBox.Show("Python script error: " + stderr);
                         ClearTempFiles(randomTempPath, resultFilePath);
-                        return;
+                        return Array.Empty<string>();
                     }
+
 
                     resultFilePath = reader.ReadToEnd().Trim();
 
@@ -108,11 +111,14 @@ namespace SmartOrganizerWPF.Common
 
             if (File.Exists(resultFilePath))
             {
-                DoWork(resultFilePath);
+                string[] result = File.ReadAllLines(resultFilePath);
+                ClearTempFiles(randomTempPath, resultFilePath);
+                return result;
             }
 
             // Delete temporary files
             ClearTempFiles(randomTempPath, resultFilePath);
+            return Array.Empty<string>();
         }
 
         private static void ClearTempFiles(params string[] tempFiles)
@@ -125,12 +131,6 @@ namespace SmartOrganizerWPF.Common
                     File.Delete(tempFile);
                 }
             }
-        }
-
-        private static void DoWork(string path)
-        {
-            string fileContent = File.ReadAllText(path);
-            MessageBox.Show(fileContent);
         }
 
         internal static void PrintData()

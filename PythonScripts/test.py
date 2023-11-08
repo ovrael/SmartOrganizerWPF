@@ -1,27 +1,67 @@
 ﻿import sys
-import json
+import random
 import tempfile
+import locale
 
-def writePathsToFile(filePaths : list[str]) -> str:
-    with tempfile.NamedTemporaryFile(mode='w', delete=False) as tmpFile:
-        for path in filePaths:
-            tmpFile.write(path + '\n')
-        tmpFilePath :str= tmpFile.name
+
+class OrganizeFile:
+    def __init__(self, path, organizedPath):
+        self.path = path
+        self.organizedPath = organizedPath
+
+
+def saveOrganizedFiles(organizedFiles: list[OrganizeFile]) -> str:
+    with tempfile.NamedTemporaryFile(mode='w', delete=False, encoding='utf-8') as tmpFile:
+        for file in organizedFiles:
+            tmpFile.write(
+                f'{file.path}?{file.organizedPath}\n')
+        tmpFilePath: str = tmpFile.name
     return tmpFilePath
 
+
+def test(organizedFiles: list[OrganizeFile]) -> list[OrganizeFile]:
+
+    randomDirectoriesLevel0 = ["Krajobrazy", "Rośliny",
+                               "Zwierzęta", "Technologia",
+                               "Dźwięki", "Jedzenie", "Książki"]
+    randomDirectoriesLevel1 = {
+        "Krajobrazy": ["Góry", "Morze", "Las", "Równiny"],
+        "Rośliny": ["Tropikalne", "Doniczkowe", "Ogrodowe"],
+        "Zwierzęta": ["Psy", "Koty", "Krowy", "Papugi", "Ryby"],
+        "Technologia": ["Komputery", "Neony", "Smartfony"],
+        "Dźwięki": ["Natura", "Instrumenalne", "Elektroniczne"],
+        "Jedzenie": ["Fast food", "Warzywa", "Owoce", "Ryby"],
+        "Książki": ["Fantasy", "Naukowe", "Romanse", "Historyczne"]
+    }
+
+    for file in organizedFiles:
+        level0: str = random.choice(randomDirectoriesLevel0)
+        level1: str = random.choice(randomDirectoriesLevel1[level0])
+        file.organizedPath = f"{level0}/{level1}"
+
+    return organizedFiles
+
+
 def main(filePath):
+    # Something went wrong with passing arguments
     if len(filePath) == 0:
         print("Received no files!")
         return
-    
-    # Load files paths to list
+
+    # Load files paths to OrganizeFile list
+    organizedFiles: list[OrganizeFile] = []
     with open(filePath) as file:
-        lines : list[str] = [line.rstrip() for line in file]
-        
-    path :str = writePathsToFile(lines)
-    
-    # Way to return data from script to C#    
+        organizedFiles = [OrganizeFile(line.strip(), "") for line in file]
+
+    # Randomize organized directory for given files
+    organizedFiles = test(organizedFiles)
+
+    # Write organized files (path?organizedDirectory) to temporary file
+    path: str = saveOrganizedFiles(organizedFiles)
+
+    # Return temporary file path to C# via console output
     print(path)
+
 
 # C:\Temp\basfk.temp
 if __name__ == "__main__":

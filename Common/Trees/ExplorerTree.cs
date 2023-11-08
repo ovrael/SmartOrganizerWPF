@@ -1,14 +1,12 @@
 ﻿using SmartOrganizerWPF.Interfaces;
 using SmartOrganizerWPF.Models;
-
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
-namespace SmartOrganizerWPF.Common
+namespace SmartOrganizerWPF.Common.Trees
 {
     internal class ExplorerTree
     {
@@ -36,12 +34,23 @@ namespace SmartOrganizerWPF.Common
             treeView.ContextMenu = new ContextMenu();
 
             bool allStatus = GetCurrentAllStatus();
+            MenuItem menuHeader = new MenuItem()
+            {
+                Header = MainDirectoryName,
+                IsEnabled = false,
+                IsCheckable = false,
+                IsHitTestVisible = false,
+                IsManipulationEnabled = false,
+            };
+
             MenuItem changeStatusAllMenuItem = new MenuItem()
             {
                 Header = allStatus ? "Unselect all files from organize" : "Select all files to organize",
                 Tag = allStatus
             };
             changeStatusAllMenuItem.Click += ChangeStatusAllMenuItem_Click;
+
+            treeView.ContextMenu.Items.Add(menuHeader);
             treeView.ContextMenu.Items.Add(changeStatusAllMenuItem);
         }
 
@@ -170,7 +179,7 @@ namespace SmartOrganizerWPF.Common
 
             MenuItem changeStatusMenuItem = new MenuItem()
             {
-                Header = (explorerTreeItem.IsChecked == null || explorerTreeItem.IsChecked == true) ? "Select to organize" : "Unselect from organize",
+                Header = explorerTreeItem.IsChecked == null || explorerTreeItem.IsChecked == true ? "Select to organize" : "Unselect from organize",
                 IsCheckable = false,
                 Tag = new object[] { explorerTreeItem, treeItem }
             };
@@ -192,7 +201,7 @@ namespace SmartOrganizerWPF.Common
             if (objects[1] is not TreeViewItem treeItem) return;
 
             explorerTreeItem.IsChecked = !(explorerTreeItem.IsChecked == null || explorerTreeItem.IsChecked == true);
-            menuItem.Header = (explorerTreeItem.IsChecked == null || explorerTreeItem.IsChecked == true) ? "Remove from organize" : "Add to organize";
+            menuItem.Header = explorerTreeItem.IsChecked == null || explorerTreeItem.IsChecked == true ? "Remove from organize" : "Add to organize";
 
             if (explorerTreeItem is DirectoryData directory)
             {
@@ -208,7 +217,7 @@ namespace SmartOrganizerWPF.Common
             if (header.Children[0] is not CheckBox checkBox) return;
 
             checkBox.IsChecked = explorerTreeItem.IsChecked;
-            header.Opacity = (explorerTreeItem.IsChecked == null || explorerTreeItem.IsChecked == true) ? 1 : 0.5;
+            header.Opacity = explorerTreeItem.IsChecked == null || explorerTreeItem.IsChecked == true ? 1 : 0.5;
         }
 
         private void OpenMenuItem_Click(object sender, RoutedEventArgs e)

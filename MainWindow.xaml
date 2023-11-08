@@ -115,6 +115,7 @@
                 </Grid.RowDefinitions>
             </Grid>
             <TreeView x:Name="ExplorerTreeView" Margin="10,10,10,10"/>
+            <TreeView x:Name="OrganizedTreeView" Grid.Column="1" Margin="10,10,10,10"/>
         </Grid>
         <Rectangle Height="40" VerticalAlignment="Center" StrokeThickness="3" Grid.Row="2">
             <Rectangle.RenderTransform>

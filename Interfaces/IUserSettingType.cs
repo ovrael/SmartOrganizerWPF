@@ -1,6 +1,6 @@
 ﻿namespace SmartOrganizerWPF.Interfaces
 {
-    interface IUserSettingType<T>
+    internal interface IUserSettingType<T>
     {
         public T DefaultValue { get; }
         public T CurrentValue { get; }

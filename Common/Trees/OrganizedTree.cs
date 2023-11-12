@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -22,6 +23,28 @@ namespace SmartOrganizerWPF.Common.Trees
         public void BuildTree(string[] organizedFiles)
         {
             treeView.Items.Clear();
+
+
+            if (UserSettings.CreateOtherFolder.Value)
+            {
+                // Sort by organized paths to put 'Other' folder at the end
+                try
+                {
+                    // Stupid way but quite works
+                    organizedFiles = organizedFiles.OrderBy(f =>
+                    {
+                        string organizedPath = f.Split('?')[1];
+                        organizedPath = organizedPath.Replace("Other", "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
+
+                        return organizedPath;
+                    }).ToArray();
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(e.Message.ToString());
+                }
+            }
+
             for (int i = 0; i < organizedFiles.Length; i++)
             {
                 string[] parts = organizedFiles[i].Split('?');
@@ -53,11 +76,11 @@ namespace SmartOrganizerWPF.Common.Trees
             int slashIndex = organizedPath.IndexOf('/');
             if (slashIndex >= 0)
             {
-                string currentPath = organizedPath[..slashIndex];
+                string currentDirectoryName = organizedPath[..slashIndex];
                 string goDeeperPath = organizedPath[(slashIndex + 1)..];
 
-                TreeViewItem currentDirectoryTreeItem = RetrieveTreeItem(currentPath, items);
-                currentDirectoryTreeItem ??= AddDirectoryTreeItem(currentPath, items);
+                TreeViewItem currentDirectoryTreeItem = RetrieveTreeItem(currentDirectoryName, items);
+                currentDirectoryTreeItem ??= AddDirectoryTreeItem(currentDirectoryName, items);
 
                 AddFileTreeItem(filePath, goDeeperPath, currentDirectoryTreeItem.Items);
 
@@ -65,7 +88,20 @@ namespace SmartOrganizerWPF.Common.Trees
             }
 
             TreeViewItem directoryParent = RetrieveTreeItem(organizedPath, items);
-            directoryParent ??= AddDirectoryTreeItem(organizedPath, items);
+            if (directoryParent == null)
+            {
+                if (organizedPath == "Other" && !UserSettings.CreateOtherFolder.Value)
+                {
+                    TreeViewItem fileTreeItem2 = CreateFileTreeItem(filePath);
+                    items.Add(fileTreeItem2);
+                    return;
+                }
+                else
+                {
+                    directoryParent = AddDirectoryTreeItem(organizedPath, items);
+                }
+            }
+
 
             TreeViewItem fileTreeItem = CreateFileTreeItem(filePath);
             directoryParent.Items.Add(fileTreeItem);
@@ -101,7 +137,7 @@ namespace SmartOrganizerWPF.Common.Trees
             itemHeader.Children.Add(label);
 
 
-            TreeViewItem directory = new TreeViewItem() { Header = itemHeader, AllowDrop = true };
+            TreeViewItem directory = new TreeViewItem() { Header = itemHeader, AllowDrop = true, Tag = $"{directoryName}_TreeItem" };
             directory.Drop += Directory_Drop;
 
             return directory;
@@ -145,7 +181,7 @@ namespace SmartOrganizerWPF.Common.Trees
             Label label = new Label() { Content = Path.GetFileName(filePath) };
             itemHeader.Children.Add(label);
 
-            TreeViewItem file = new TreeViewItem() { Header = itemHeader };
+            TreeViewItem file = new TreeViewItem() { Header = itemHeader, Tag = $"{filePath}_TreeItem" };
 
             file.MouseMove += FileTreeItemDragStart_MouseMove;
 

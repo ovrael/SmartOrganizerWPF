@@ -8,13 +8,15 @@ class OrganizeFile:
     def __init__(self, path, organizedPath):
         self.path = path
         self.organizedPath = organizedPath
+        
+    def createSavePath(self) -> str:
+        return f'{self.path}?{self.organizedPath}\n'
 
 
 def saveOrganizedFiles(organizedFiles: list[OrganizeFile]) -> str:
     with tempfile.NamedTemporaryFile(mode='w', delete=False, encoding='utf-8') as tmpFile:
         for file in organizedFiles:
-            tmpFile.write(
-                f'{file.path}?{file.organizedPath}\n')
+            tmpFile.write(file.createSavePath())
         tmpFilePath: str = tmpFile.name
     return tmpFilePath
 
@@ -38,6 +40,8 @@ def test(organizedFiles: list[OrganizeFile]) -> list[OrganizeFile]:
         level0: str = random.choice(randomDirectoriesLevel0)
         level1: str = random.choice(randomDirectoriesLevel1[level0])
         file.organizedPath = f"{level0}/{level1}"
+        if(random.random() < 0.7): # 1 for 5 files will not be organized fully, only at level 0
+            file.organizedPath = f"{level0}/Other"
 
     return organizedFiles
 

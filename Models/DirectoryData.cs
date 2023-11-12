@@ -35,7 +35,18 @@ namespace SmartOrganizerWPF.Models
                     string[] directoryPaths = Directory.GetDirectories(DirectoryInfo.FullName);
                     foreach (var directoryPath in directoryPaths)
                     {
-                        Directories.Add(new DirectoryData(directoryPath));
+                        DirectoryData directoryToAdd = new DirectoryData(directoryPath);
+                        if (directoryToAdd.Directories.Count == 0 && directoryToAdd.Files.Count == 0)
+                        {
+                            if (UserSettings.IncludeEmptyFolders.Value)
+                            {
+                                Directories.Add(directoryToAdd);
+                            }
+                        }
+                        else
+                        {
+                            Directories.Add(directoryToAdd);
+                        }
                     }
                 }
                 catch (Exception ex)

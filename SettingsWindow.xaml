@@ -9,10 +9,18 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="50"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Border BorderBrush="Black" BorderThickness="1" Margin="10,10,10,10">
-            <CheckBox x:Name="DeepSearchCheckBox" Content="Deep search" Margin="9,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Width="106" Click="DeepSearchCheckBox_Click"/>
+            <CheckBox x:Name="DeepSearchCheckBox" Content="Deep search" HorizontalAlignment="Center" VerticalAlignment="Center" Width="360" Click="DeepSearchCheckBox_Click"/>
+        </Border>
+        <Border BorderBrush="Black" BorderThickness="1" Margin="10,10,10,10" Grid.Row="1">
+            <CheckBox x:Name="IncludeEmptyFoldersCheckBox" Content="Include empty folders" HorizontalAlignment="Center" VerticalAlignment="Center" Width="360" Click="DeepSearchCheckBox_Click"/>
+        </Border>
+        <Border BorderBrush="Black" BorderThickness="1" Margin="10,10,10,10" Grid.Row="2">
+            <CheckBox x:Name="CreateOtherFolderCheckBox" Content="Create 'other' folder" HorizontalAlignment="Center" VerticalAlignment="Center" Width="360" Click="DeepSearchCheckBox_Click"/>
         </Border>
 
     </Grid>

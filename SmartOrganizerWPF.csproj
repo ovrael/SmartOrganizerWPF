@@ -12,6 +12,7 @@
 		<None Remove="kostka cpu health used.png" />
 		<None Remove="kostka cpu health.png" />
 		<None Remove="settings_icon.png" />
+		<None Remove="settings_icon2.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -21,6 +22,7 @@
 
 	<ItemGroup>
 		<Resource Include="settings_icon.png" />
+		<Resource Include="settings_icon2.png" />
 	</ItemGroup>
 
 </Project>

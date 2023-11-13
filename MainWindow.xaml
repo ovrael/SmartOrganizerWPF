@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SmartOrganizerWPF"
         mc:Ignorable="d"
-        Title="Smart Organizer" Height="720" Width="1280" WindowStartupLocation="CenterScreen" MinWidth="600" MinHeight="500">
+        Title="Smart Organizer" Height="720" Width="1280" WindowStartupLocation="CenterScreen" MinWidth="600" MinHeight="500" Closing="Window_Closing">
     <Grid d:IsLocked="True">
         <Grid.Background>
             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">

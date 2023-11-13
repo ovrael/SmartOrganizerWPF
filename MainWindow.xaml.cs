@@ -19,12 +19,10 @@ namespace SmartOrganizerWPF
     /// </summary>
     public partial class MainWindow : Window
     {
-        private string selectedExtension = string.Empty;
         private DirectoryData? selectedDirectory;
         private int oldFolderIndex = -1;
 
-        private bool settingsAreOpen = false;
-        private SettingsWindow settingsWindow = null;
+        private SettingsWindow? settingsWindow = null;
 
         private readonly ExplorerTree loadedFilesTree;
         private readonly OrganizedTree organizedTree;
@@ -197,30 +195,18 @@ namespace SmartOrganizerWPF
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
-            if (settingsAreOpen || settingsWindow != null) return;
+            if (settingsWindow != null)
+            {
+                settingsWindow.Close();
+                settingsWindow = null;
+            }
+            else
+            {
+                settingsWindow = new SettingsWindow() { Owner = this };
+                settingsWindow.Closed += (s, e) => { settingsWindow.Close(); settingsWindow = null; };
+                settingsWindow.Show();
+            }
 
-            settingsWindow = new SettingsWindow();
-            settingsWindow.Show();
-
-            settingsWindow.Closed += SettingsWindow_Closed;
-        }
-
-        private void SettingsWindow_Closed(object? sender, EventArgs e)
-        {
-            //settingsWindow.UpdateSettings();
-
-            settingsAreOpen = false;
-            settingsWindow = null;
-        }
-
-        private void SelectExtensionTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            TextBox textBox = sender as TextBox;
-            if (textBox == null || textBox.Text == null || textBox.Text.Length == 0) return;
-
-
-
-            selectedExtension = textBox.Text;
         }
 
         private void OrganizeButton_Click(object sender, RoutedEventArgs e)
@@ -266,6 +252,15 @@ namespace SmartOrganizerWPF
             if (extensions.Text.Length == 0)
             {
                 extensions.Text = "Additional extensions";
+            }
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (settingsWindow != null)
+            {
+                settingsWindow.Close();
+                settingsWindow = null;
             }
         }
     }

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:SmartOrganizerWPF"
         mc:Ignorable="d"
         Title="Smart Organizer" Height="720" Width="1280" WindowStartupLocation="CenterScreen" MinWidth="600" MinHeight="500">
-    <Grid>
+    <Grid d:IsLocked="True">
         <Grid.Background>
             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                 <LinearGradientBrush.RelativeTransform>
@@ -27,12 +27,12 @@
             <RowDefinition/>
             <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
-        <Grid>
+        <Grid d:IsLocked="True">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Grid>
+            <Grid d:IsLocked="True">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="10"/>
                     <ColumnDefinition/>
@@ -43,8 +43,8 @@
                     <RowDefinition Height="40"/>
                     <RowDefinition Height="20"/>
                 </Grid.RowDefinitions>
-                <ComboBox x:Name="SelectFolderComboBox" VerticalAlignment="Center" SelectionChanged="SelectFolderComboBox_SelectionChanged" Height="20" Background="{x:Null}" BorderBrush="{x:Null}" VerticalContentAlignment="Center" BorderThickness="0,0,0,0" Grid.Column="1"/>
-                <Grid Grid.Row="1" Grid.Column="1">
+                <ComboBox x:Name="SelectFolderComboBox" VerticalAlignment="Center" SelectionChanged="SelectFolderComboBox_SelectionChanged" Height="20" Background="{x:Null}" BorderBrush="{x:Null}" VerticalContentAlignment="Center" BorderThickness="0,0,0,0" Grid.Column="1" d:IsLocked="True"/>
+                <Grid Grid.Row="1" Grid.Column="1" d:IsLocked="True">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition Width="20"/>
@@ -52,21 +52,21 @@
                         <ColumnDefinition Width="20"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <ComboBox x:Name="FileTypesComboBox" Height="20" VerticalAlignment="Center" BorderThickness="0,0,0,0" SelectionChanged="FileTypesComboBox_SelectionChanged"/>
-                    <TextBox x:Name="ExtensionsTextBox" TextWrapping="Wrap" Text="Additional extensions" Height="20" VerticalContentAlignment="Center" ToolTip="Select files with given extension" Grid.Column="1" VerticalAlignment="Center" GotFocus="ExtensionsTextBox_GotFocus" LostFocus="ExtensionsTextBox_LostFocus" Margin="20,0,20,0" Grid.ColumnSpan="3"/>
-                    <Button x:Name="ScanButton" Grid.Column="4" Content="Scan" VerticalAlignment="Center" Height="20" Click="ScanButton_Click" Background="#FF2BDE5F"/>
+                    <ComboBox x:Name="FileTypesComboBox" Height="20" VerticalAlignment="Center" BorderThickness="0,0,0,0" SelectionChanged="FileTypesComboBox_SelectionChanged" d:IsLocked="True"/>
+                    <TextBox x:Name="ExtensionsTextBox" TextWrapping="Wrap" Text="Additional extensions" Height="20" VerticalContentAlignment="Center" ToolTip="Select files with given extension" Grid.Column="1" VerticalAlignment="Center" GotFocus="ExtensionsTextBox_GotFocus" LostFocus="ExtensionsTextBox_LostFocus" Margin="20,0,20,0" Grid.ColumnSpan="3" d:IsLocked="True"/>
+                    <Button x:Name="ScanButton" Grid.Column="4" Content="Scan" VerticalAlignment="Center" Height="20" Click="ScanButton_Click" Background="#FF2BDE5F" d:IsLocked="True"/>
                 </Grid>
-                <ProgressBar x:Name="LoadProgressBar" Height="10" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1"/>
+                <ProgressBar x:Name="LoadProgressBar" Height="10" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1" d:IsLocked="True"/>
             </Grid>
-            <Grid Grid.Column="1">
+            <Grid Grid.Column="1" d:IsLocked="True">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Border BorderBrush="Black" BorderThickness="1" Width="30" Height="30" CornerRadius="2,2,2,2" VerticalAlignment="Top" HorizontalAlignment="Right" MinWidth="30" MinHeight="30" MaxWidth="30" MaxHeight="30" Margin="0,10,10,0" Cursor="Hand">
+                <Border BorderBrush="Black" BorderThickness="1" Width="30" Height="30" CornerRadius="2,2,2,2" VerticalAlignment="Top" HorizontalAlignment="Right" MinWidth="30" MinHeight="30" MaxWidth="30" MaxHeight="30" Margin="0,10,10,0" Cursor="Hand" d:IsLocked="True">
                     <Border.Background>
                         <SolidColorBrush Color="#FFF57373" Opacity="0.5"/>
                     </Border.Background>
-                    <Button x:Name="SettingsButton" Height="30" Foreground="{x:Null}" RenderTransformOrigin="0.5,0.5" BorderBrush="{x:Null}" Click="SettingsButton_Click" Width="30" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button x:Name="SettingsButton" Height="30" Foreground="{x:Null}" RenderTransformOrigin="0.5,0.5" BorderBrush="{x:Null}" Click="SettingsButton_Click" Width="30" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" HorizontalAlignment="Center" VerticalAlignment="Center" d:IsLocked="True">
                         <Button.Style>
                             <Style TargetType="{x:Type Button}">
                                 <Setter Property="Background" Value="Green"/>
@@ -100,24 +100,24 @@
                         </Button.Background>
                     </Button>
                 </Border>
-                <Button x:Name="OrganizeButton" Content="Run" HorizontalAlignment="Center" VerticalAlignment="Center" Height="64" Width="188" Background="#FF1FD25B" FontSize="24" Click="OrganizeButton_Click"/>
+                <Button x:Name="OrganizeButton" Content="Run" HorizontalAlignment="Center" VerticalAlignment="Center" Height="64" Width="188" Background="#FF1FD25B" FontSize="24" Click="OrganizeButton_Click" d:IsLocked="True"/>
             </Grid>
         </Grid>
 
-        <Grid Grid.Row="1" Background="#FFD5ECFD">
+        <Grid Grid.Row="1" Background="#FFD5ECFD" d:IsLocked="True">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Grid Grid.Column="1">
+            <Grid Grid.Column="1" d:IsLocked="True">
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
             </Grid>
-            <TreeView x:Name="ExplorerTreeView" Margin="10,10,10,10"/>
-            <TreeView x:Name="OrganizedTreeView" Grid.Column="1" Margin="10,10,10,10"/>
+            <TreeView x:Name="ExplorerTreeView" Margin="10,10,10,10" d:IsLocked="True"/>
+            <TreeView x:Name="OrganizedTreeView" Grid.Column="1" Margin="10,10,10,10" d:IsLocked="True"/>
         </Grid>
-        <Rectangle Height="40" VerticalAlignment="Center" StrokeThickness="3" Grid.Row="2">
+        <Rectangle Height="40" VerticalAlignment="Center" StrokeThickness="3" Grid.Row="2" d:IsLocked="True">
             <Rectangle.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
@@ -142,7 +142,7 @@
                 </LinearGradientBrush>
             </Rectangle.Fill>
         </Rectangle>
-        <Label x:Name="loadingLabel" Content="Loaded directory" Grid.Row="2" Background="{x:Null}" FontWeight="Bold" FontSize="14" Height="29" VerticalAlignment="Center" Margin="10,0,10,0"/>
+        <Label x:Name="loadingLabel" Content="Loaded directory" Grid.Row="2" Background="{x:Null}" FontWeight="Bold" FontSize="14" Height="29" VerticalAlignment="Center" Margin="10,0,10,0" d:IsLocked="True"/>
 
     </Grid>
 </Window>

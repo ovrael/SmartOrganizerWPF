@@ -207,7 +207,7 @@ namespace SmartOrganizerWPF
 
         private void SettingsWindow_Closed(object? sender, EventArgs e)
         {
-            settingsWindow.UpdateSettings();
+            //settingsWindow.UpdateSettings();
 
             settingsAreOpen = false;
             settingsWindow = null;

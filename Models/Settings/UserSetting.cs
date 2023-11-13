@@ -16,6 +16,11 @@ namespace SmartOrganizerWPF.Models.Settings
             type.SetCurrentValue(newValue);
         }
 
+        public void LoadData(string textValue)
+        {
+            type.LoadData(textValue);
+        }
+
         public UserSetting(string name, string description, IUserSettingType<T> type)
         {
             Name = name;

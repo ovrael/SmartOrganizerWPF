@@ -3,6 +3,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using SmartOrganizerWPF.Models.Settings;
+
 namespace SmartOrganizerWPF.Common
 {
     public class Tools

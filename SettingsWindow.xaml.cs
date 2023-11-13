@@ -1,5 +1,6 @@
 ﻿using SmartOrganizerWPF.Common;
 using SmartOrganizerWPF.Models.Settings;
+
 using System.Windows;
 using System.Windows.Controls;
 
@@ -14,11 +15,15 @@ namespace SmartOrganizerWPF
         {
             InitializeComponent();
 
-            StackPanel files = CreateSettingsCategory("Files", "files");
-            files.Children.Add(CreateCheckBoxSetting(UserSettings.DeepSearch));
-            files.Children.Add(CreateCheckBoxSetting(UserSettings.IncludeEmptyFolders));
-            files.Children.Add(CreateCheckBoxSetting(UserSettings.CreateOtherFolder));
-
+            StackPanel loadingFilesCategory = CreateSettingsCategory("Loading files", "loadingFiles");
+            StackPanel organizingFilesCategory = CreateSettingsCategory("Organizing files", "organizingFiles");
+            loadingFilesCategory.Children.Add(CreateCheckBoxSetting(UserSettings.DeepSearch));
+            loadingFilesCategory.Children.Add(CreateCheckBoxSetting(UserSettings.IncludeEmptyFolders));
+            organizingFilesCategory.Children.Add(CreateCheckBoxSetting(UserSettings.CreateOtherFolder));
+            organizingFilesCategory.Children.Add(CreateCheckBoxSetting(UserSettings.DeleteMovedFiles));
+            organizingFilesCategory.Children.Add(CreateCheckBoxSetting(UserSettings.CreateOrganizedFolder));
+            organizingFilesCategory.Children.Add(CreateCheckBoxSetting(UserSettings.CreateEmptyFolders));
+            organizingFilesCategory.Children.Add(CreateCheckBoxSetting(UserSettings.OpenOrganizedFolderAfterWork));
         }
 
         private StackPanel? GetCategory(string tag)
@@ -46,7 +51,7 @@ namespace SmartOrganizerWPF
             Label label = new Label()
             {
                 Content = displayName,
-                Height = 36,
+                Height = 40,
                 FontSize = 20,
                 Foreground = Tools.CreateBrush("#5acc8b")
             };
@@ -123,6 +128,11 @@ namespace SmartOrganizerWPF
             if (checkBox.Tag is not UserSetting<bool> setting) return;
 
             setting.SetValue(checkBox.IsChecked.Value);
+        }
+
+        private void Window_Closed(object sender, System.EventArgs e)
+        {
+            UserSettings.SaveSettingsToFile();
         }
     }
 }

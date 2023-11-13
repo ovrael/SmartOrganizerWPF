@@ -5,25 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SmartOrganizerWPF"
         mc:Ignorable="d"
-        Title="Settings" Height="600" Width="400" Background="#FF3E415B" WindowStyle="ToolWindow" WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+        Title="Settings" Height="600" Width="400" Background="#FF3E415B" WindowStyle="ToolWindow" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" Closed="Window_Closed">
 
     <Grid>
         <ScrollViewer x:Name="CategoriesScrollViewer" Padding="8,5,8,5">
-            <StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <Label Content="Files" FontSize="18" Foreground="#FF0CF300"/>
-                    <Border BorderBrush="Black" BorderThickness="1" VerticalAlignment="Center" Height="4" Width="322" RenderTransformOrigin="0.5,0.5">
-                        <Border.RenderTransform>
-                            <TransformGroup>
-                                <ScaleTransform ScaleY="-1"/>
-                                <SkewTransform/>
-                                <RotateTransform/>
-                                <TranslateTransform/>
-                            </TransformGroup>
-                        </Border.RenderTransform>
-                    </Border>
-                </StackPanel>
-            </StackPanel>
+            <StackPanel/>
         </ScrollViewer>
     </Grid>
 </Window>

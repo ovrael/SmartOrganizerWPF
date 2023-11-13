@@ -32,5 +32,14 @@ namespace SmartOrganizerWPF.Models.Settings
         {
             CurrentValue = value;
         }
+
+        public void LoadData(string textValue)
+        {
+            bool newValue = CurrentValue;
+            if (bool.TryParse(textValue, out newValue))
+            {
+                CurrentValue = newValue;
+            }
+        }
     }
 }

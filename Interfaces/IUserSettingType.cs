@@ -7,5 +7,6 @@
 
         public void SetCurrentValue(T value);
         public string CreateTooltip();
+        void LoadData(string textValue);
     }
 }

@@ -6,6 +6,8 @@ using SmartOrganizerWPF.Common.Trees;
 using SmartOrganizerWPF.Models;
 
 using System;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,6 +34,7 @@ namespace SmartOrganizerWPF
         public MainWindow()
         {
             InitializeComponent();
+            UserSettings.LoadSettingsFromFile();
 
             // ADD ALSO USER DEFINED DIRECTORIES
             SelectFolderComboBox.Text = "Select folder";
@@ -53,6 +56,14 @@ namespace SmartOrganizerWPF
             ScanButton.Tag = false;
         }
 
+        private void ChangeScanStatus(bool isScanning)
+        {
+            ScanButton.Tag = isScanning;
+            ChangeScanButton(isScanning);
+            OrganizeButton.IsEnabled = !isScanning;
+            LoadProgressBar.IsIndeterminate = isScanning;
+        }
+
         private async void ScanButton_Click(object sender, RoutedEventArgs e)
         {
             string? scanPath = SelectFolderComboBox.SelectedItem as string;
@@ -66,10 +77,8 @@ namespace SmartOrganizerWPF
                 isLoading = true;
                 try
                 {
-                    ChangeScanButton(isLoading);
-                    scanButton.Tag = isLoading;
-                    LoadProgressBar.IsIndeterminate = isLoading;
-                    OrganizeButton.IsEnabled = !isLoading;
+                    ChangeScanStatus(isLoading);
+                    MoveFilesButton.IsEnabled = false;
 
                     scanCancelTokenSource = new CancellationTokenSource();
                     await LoadDirectory(scanPath, scanCancelTokenSource.Token);
@@ -88,11 +97,7 @@ namespace SmartOrganizerWPF
                 scanCancelTokenSource.Cancel();
             }
 
-            isLoading = false;
-            ChangeScanButton(isLoading);
-            LoadProgressBar.IsIndeterminate = isLoading;
-            scanButton.Tag = isLoading;
-            OrganizeButton.IsEnabled = !isLoading;
+            ChangeScanStatus(false);
         }
         private async void SelectFolderComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -123,10 +128,8 @@ namespace SmartOrganizerWPF
 
             try
             {
-                ScanButton.Tag = true;
-                ChangeScanButton(true);
-                OrganizeButton.IsEnabled = false;
-                LoadProgressBar.IsIndeterminate = true;
+                MoveFilesButton.IsEnabled = false;
+                ChangeScanStatus(true);
 
                 scanCancelTokenSource = new CancellationTokenSource();
                 await LoadDirectory(folderName, scanCancelTokenSource.Token);
@@ -143,9 +146,7 @@ namespace SmartOrganizerWPF
                 MessageBox.Show(ex.ToString());
             }
 
-            OrganizeButton.IsEnabled = true;
-            ScanButton.Tag = false;
-            ChangeScanButton(false);
+            ChangeScanStatus(false);
         }
 
         private void ChangeScanButton(bool isLoading)
@@ -212,6 +213,7 @@ namespace SmartOrganizerWPF
         private void OrganizeButton_Click(object sender, RoutedEventArgs e)
         {
             if (selectedDirectory == null) return;
+            MoveFilesButton.IsEnabled = false;
 
             try
             {
@@ -219,6 +221,7 @@ namespace SmartOrganizerWPF
                 if (paths.Length == 0) return;
 
                 organizedTree.BuildTree(paths);
+                MoveFilesButton.IsEnabled = true;
             }
             catch (Exception ex)
             {
@@ -253,6 +256,36 @@ namespace SmartOrganizerWPF
             {
                 extensions.Text = "Additional extensions";
             }
+        }
+
+        private void MoveFilesButton_Click(object sender, RoutedEventArgs e)
+        {
+            MoveFilesButton.IsEnabled = false;
+
+            string organizedFolder = string.Empty;
+            try
+            {
+                organizedFolder = organizedTree.MoveFilesOnDisk(selectedDirectory.FullPath);
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error while organizing: " + ex.ToString());
+                return;
+            }
+
+            MessageBox.Show("Organizing work is done!");
+            //await LoadDirectory(organizedFolder, scanCancelTokenSource.Token);
+
+            if (UserSettings.OpenOrganizedFolderAfterWork.Value)
+            {
+                if (Directory.Exists(organizedFolder))
+                {
+                    Process.Start("explorer.exe", organizedFolder);
+                }
+            }
+
+            MoveFilesButton.IsEnabled = true;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

@@ -1,4 +1,5 @@
 ﻿using SmartOrganizerWPF.Interfaces;
+
 using System;
 
 namespace SmartOrganizerWPF.Models.Settings
@@ -10,6 +11,11 @@ namespace SmartOrganizerWPF.Models.Settings
         public string CurrentValue { get; private set; }
 
         public string CreateTooltip()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void LoadData(string textValue)
         {
             throw new NotImplementedException();
         }

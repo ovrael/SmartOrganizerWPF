@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 
 using SmartOrganizerWPF.Models.Settings;
 
@@ -6,6 +10,8 @@ namespace SmartOrganizerWPF.Common
 {
     internal static class UserSettings
     {
+        private static readonly string settingsFileName = "settings.stgs";
+
         public static UserSetting<bool> DeepSearch = new UserSetting<bool>(
             "Deep search",
             "Allow to search content of directories in selected folder",
@@ -33,5 +39,113 @@ namespace SmartOrganizerWPF.Common
                 "If file is uncategorized at given level, it will be put into 'other' folder"
             ));
 
+        public static UserSetting<bool> DeleteMovedFiles = new UserSetting<bool>(
+        "Delete moved files",
+        "Should delete organized files from old directories",
+        new BoolSetting(
+            false,
+            "Organized files are not deleted from old directories, works like cut -> paste",
+            "Delete files at old directories after organizing, works like copy -> paste"
+        ));
+
+        public static UserSetting<bool> CreateOrganizedFolder = new UserSetting<bool>(
+        "Create organized folder",
+        "All organized directories are put into 'organized' folder in selected directory",
+        new BoolSetting(
+            true,
+            "Organized folders are created at selected directory",
+            "Create 'organized' folder then organized folders are created inside 'organizded'"
+        ));
+
+        public static UserSetting<bool> CreateEmptyFolders = new UserSetting<bool>(
+        "Create empty folders",
+        "Should create empty organized folders",
+        new BoolSetting(
+            false,
+            "Empty organized folders are not created",
+            "Creates empty organized folders"
+        ));
+
+        public static UserSetting<bool> OpenOrganizedFolderAfterWork = new UserSetting<bool>(
+        "Open organized folder after work",
+        "After organizing all files program will open top level organized folder",
+        new BoolSetting(
+            false,
+            "Program will only show notification after work is done",
+            "Top level organized folder will be open after notification of completed work"
+        ));
+
+        static UserSettings()
+        {
+            LoadSettingsFromFile();
+        }
+
+        public static void SaveSettingsToFile()
+        {
+            Type userSettings = typeof(UserSettings);
+
+            if (!userSettings.IsClass)
+                return;
+
+            if (!userSettings.IsAbstract || !userSettings.IsSealed)
+                return;
+
+            string dataFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
+            if (!Directory.Exists(dataFolderPath))
+            {
+                Directory.CreateDirectory(dataFolderPath);
+            }
+
+            string settingsPath = Path.Combine(dataFolderPath, settingsFileName);
+
+            List<string> settingsLines = new List<string>();
+            var settings = userSettings.GetFields(BindingFlags.Public | BindingFlags.Static);
+            foreach (var settingField in settings)
+            {
+                object fieldObject = settingField.GetValue(null);
+                MethodInfo getValueMethod = fieldObject.GetType().GetMethod("get_Value");
+                object? settingValue = getValueMethod.Invoke(fieldObject, null);
+
+                settingsLines.Add($"{settingField.Name}=-:-={settingValue}");
+            }
+            File.WriteAllLines(settingsPath, settingsLines);
+        }
+
+        public static void LoadSettingsFromFile()
+        {
+            Type userSettings = typeof(UserSettings);
+
+            if (!userSettings.IsClass)
+                return;
+
+            if (!userSettings.IsAbstract || !userSettings.IsSealed)
+                return;
+
+            string dataFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
+            string settingsPath = Path.Combine(dataFolderPath, settingsFileName);
+            if (!File.Exists(settingsPath))
+            {
+                SaveSettingsToFile();
+                return;
+            }
+
+            var settings = userSettings.GetFields(BindingFlags.Public | BindingFlags.Static);
+
+            string[] settingsLines = File.ReadAllLines(settingsPath);
+            foreach (var settingLine in settingsLines)
+            {
+                string[] settingParts = settingLine.Split("=-:-=");
+                if (settingParts.Length != 2) continue;
+
+                var setting = settings.FirstOrDefault(s => s.Name == settingParts[0]);
+                if (setting == null) continue;
+
+                object fieldObject = setting.GetValue(null);
+                MethodInfo setValueMethod = fieldObject.GetType().GetMethod("LoadData");
+                if (setValueMethod == null) continue;
+
+                setValueMethod.Invoke(fieldObject, new object[] { settingParts[1] });
+            }
+        }
     }
 }

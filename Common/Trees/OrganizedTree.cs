@@ -6,7 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-
+//using System.Windows.Shapes;
 
 namespace SmartOrganizerWPF.Common.Trees
 {
@@ -92,8 +92,8 @@ namespace SmartOrganizerWPF.Common.Trees
             {
                 if (organizedPath == "Other" && !UserSettings.CreateOtherFolder.Value)
                 {
-                    TreeViewItem fileTreeItem2 = CreateFileTreeItem(filePath);
-                    items.Add(fileTreeItem2);
+                    TreeViewItem unorganizedFile = CreateFileTreeItem(filePath);
+                    items.Add(unorganizedFile);
                     return;
                 }
                 else
@@ -137,10 +137,19 @@ namespace SmartOrganizerWPF.Common.Trees
             itemHeader.Children.Add(label);
 
 
-            TreeViewItem directory = new TreeViewItem() { Header = itemHeader, AllowDrop = true, Tag = $"{directoryName}_TreeItem" };
+            TreeViewItem directory = new TreeViewItem() { Header = itemHeader, AllowDrop = true, Tag = $"{directoryName}" };
             directory.Drop += Directory_Drop;
+            directory.DragEnter += Directory_DragEnter;
 
             return directory;
+        }
+
+        private void Directory_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Handled = true;
+            if (sender is not TreeViewItem treeItem) return;
+            treeItem.IsSelected = true;
+            treeItem.IsExpanded = true;
         }
 
         private void Directory_Drop(object sender, DragEventArgs e)
@@ -181,11 +190,23 @@ namespace SmartOrganizerWPF.Common.Trees
             Label label = new Label() { Content = Path.GetFileName(filePath) };
             itemHeader.Children.Add(label);
 
-            TreeViewItem file = new TreeViewItem() { Header = itemHeader, Tag = $"{filePath}_TreeItem" };
+            TreeViewItem file = new TreeViewItem() { Header = itemHeader, Tag = $"File", ToolTip = filePath };
 
             file.MouseMove += FileTreeItemDragStart_MouseMove;
+            file.MouseDoubleClick += File_MouseDoubleClick;
 
             return file;
+        }
+
+        private void File_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is not TreeViewItem treeItem) return;
+            if (treeItem.ToolTip is not string filePath) return;
+
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                Process.Start("explorer.exe", filePath);
+            };
         }
 
         private void FileTreeItemDragStart_MouseMove(object sender, MouseEventArgs e)
@@ -204,9 +225,63 @@ namespace SmartOrganizerWPF.Common.Trees
             DragDrop.DoDragDrop(fileTreeItem, $"{itemIndex}?{filePath}", DragDropEffects.Copy);
         }
 
-        public void MoveFilesOnDisk(string mainDirectory)
+        public string MoveFilesOnDisk(string mainDirectory)
         {
+            if (!Directory.Exists(mainDirectory))
+            {
+                MessageBox.Show("Cannot find selected directory for saving organized files");
+                return string.Empty;
+            };
 
+            if (UserSettings.CreateOrganizedFolder.Value)
+            {
+                mainDirectory = Path.Combine(mainDirectory, "organized");
+                Directory.CreateDirectory(mainDirectory);
+            }
+
+            OrganizeDirectories(mainDirectory, treeView.Items);
+
+            return mainDirectory;
+        }
+
+        private void OrganizeDirectories(string directoryPath, ItemCollection items)
+        {
+            foreach (var item in items)
+            {
+                if (item is not TreeViewItem treeItem) continue;
+                if (treeItem.Tag is not string itemTag) continue;
+                if (itemTag == "File")
+                {
+                    if (treeItem.ToolTip is not string filePath) continue;
+                    MoveFile(directoryPath, filePath);
+                }
+                else
+                {
+                    string deeperFolder = Path.Combine(directoryPath, itemTag);
+                    CreateFolderOnDisk(deeperFolder);
+                    OrganizeDirectories(deeperFolder, treeItem.Items);
+                }
+            }
+        }
+
+        private void CreateFolderOnDisk(string deeperFolder)
+        {
+            if (Directory.Exists(deeperFolder)) return;
+            Directory.CreateDirectory(deeperFolder);
+        }
+
+        private static void MoveFile(string path, string filePath)
+        {
+            if (!File.Exists(filePath)) return;
+
+            if (UserSettings.DeleteMovedFiles.Value)
+            {
+                File.Move(filePath, Path.Combine(path, Path.GetFileName(filePath)));
+            }
+            else
+            {
+                File.Copy(filePath, Path.Combine(path, Path.GetFileName(filePath)));
+            }
         }
     }
 }

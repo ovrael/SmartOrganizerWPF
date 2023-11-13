@@ -1,26 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net7.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
-    <UseWPF>true</UseWPF>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net7.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<UseWPF>true</UseWPF>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Bez tytułu.png" />
-    <None Remove="kostka cpu health used.png" />
-    <None Remove="kostka cpu health.png" />
-    <None Remove="settings_icon.png" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Remove="Bez tytułu.png" />
+		<None Remove="kostka cpu health used.png" />
+		<None Remove="kostka cpu health.png" />
+		<None Remove="settings_icon.png" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.5" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.5" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Resource Include="settings_icon.png" />
-  </ItemGroup>
+	<ItemGroup>
+		<Resource Include="settings_icon.png" />
+	</ItemGroup>
 
 </Project>

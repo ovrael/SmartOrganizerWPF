@@ -1,10 +1,9 @@
-﻿using System;
+﻿using SmartOrganizerWPF.Models.Settings;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-
-using SmartOrganizerWPF.Models.Settings;
 
 namespace SmartOrganizerWPF.Common
 {
@@ -77,19 +76,11 @@ namespace SmartOrganizerWPF.Common
 
         static UserSettings()
         {
-            LoadSettingsFromFile();
+            LoadFromFile();
         }
 
-        public static void SaveSettingsToFile()
+        public static void SaveToFile()
         {
-            Type userSettings = typeof(UserSettings);
-
-            if (!userSettings.IsClass)
-                return;
-
-            if (!userSettings.IsAbstract || !userSettings.IsSealed)
-                return;
-
             string dataFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
             if (!Directory.Exists(dataFolderPath))
             {
@@ -97,9 +88,9 @@ namespace SmartOrganizerWPF.Common
             }
 
             string settingsPath = Path.Combine(dataFolderPath, settingsFileName);
-
             List<string> settingsLines = new List<string>();
-            var settings = userSettings.GetFields(BindingFlags.Public | BindingFlags.Static);
+
+            var settings = GetFields();
             foreach (var settingField in settings)
             {
                 object fieldObject = settingField.GetValue(null);
@@ -111,26 +102,17 @@ namespace SmartOrganizerWPF.Common
             File.WriteAllLines(settingsPath, settingsLines);
         }
 
-        public static void LoadSettingsFromFile()
+        public static void LoadFromFile()
         {
-            Type userSettings = typeof(UserSettings);
-
-            if (!userSettings.IsClass)
-                return;
-
-            if (!userSettings.IsAbstract || !userSettings.IsSealed)
-                return;
-
             string dataFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
             string settingsPath = Path.Combine(dataFolderPath, settingsFileName);
             if (!File.Exists(settingsPath))
             {
-                SaveSettingsToFile();
+                SaveToFile();
                 return;
             }
 
-            var settings = userSettings.GetFields(BindingFlags.Public | BindingFlags.Static);
-
+            FieldInfo[] settings = GetFields();
             string[] settingsLines = File.ReadAllLines(settingsPath);
             foreach (var settingLine in settingsLines)
             {
@@ -146,6 +128,35 @@ namespace SmartOrganizerWPF.Common
 
                 setValueMethod.Invoke(fieldObject, new object[] { settingParts[1] });
             }
+        }
+
+        public static void ResetToDefault()
+        {
+            var settings = GetFields();
+            foreach (var settingField in settings)
+            {
+                object fieldObject = settingField.GetValue(null);
+                MethodInfo getValueMethod = fieldObject.GetType().GetMethod("get_DefaultValue");
+                object? defaultValue = getValueMethod.Invoke(fieldObject, null);
+                //Type settingType = getValueMethod.ReturnType;
+
+                MethodInfo setValueMethod = fieldObject.GetType().GetMethod("SetValue");
+                setValueMethod.Invoke(fieldObject, new object[] { defaultValue });
+            }
+
+        }
+
+        private static FieldInfo[] GetFields()
+        {
+            Type userSettings = typeof(UserSettings);
+
+            if (!userSettings.IsClass)
+                return Array.Empty<FieldInfo>();
+
+            if (!userSettings.IsAbstract || !userSettings.IsSealed)
+                return Array.Empty<FieldInfo>();
+
+            return userSettings.GetFields(BindingFlags.Public | BindingFlags.Static);
         }
     }
 }

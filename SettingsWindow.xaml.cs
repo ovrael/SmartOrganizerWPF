@@ -1,6 +1,5 @@
 ﻿using SmartOrganizerWPF.Common;
 using SmartOrganizerWPF.Models.Settings;
-
 using System.Windows;
 using System.Windows.Controls;
 
@@ -86,7 +85,8 @@ namespace SmartOrganizerWPF
                 Padding = new Thickness(5, 5, 5, 5),
                 Margin = new Thickness(0, 0, 0, 5),
                 BorderBrush = null,
-                BorderThickness = new Thickness(0, 0, 0, 0)
+                BorderThickness = new Thickness(0, 0, 0, 0),
+                Tag = "checkbox"
             };
 
             StackPanel settingsContent = new StackPanel()
@@ -119,7 +119,42 @@ namespace SmartOrganizerWPF
             settingsContent.Children.Add(checkBox);
             settingsContent.Children.Add(description);
             border.Child = settingsContent;
+
             return border;
+        }
+
+        private void RefreshUI()
+        {
+            if (CategoriesScrollViewer.Content is not StackPanel scrollContent) return;
+            foreach (var category in scrollContent.Children)
+            {
+                if (category is not StackPanel categoryPanel) continue;
+                foreach (var setting in categoryPanel.Children)
+                {
+                    if (setting is not Border settingBorder) continue;
+                    if (settingBorder.Tag is not string settingType) continue;
+
+                    switch (settingType)
+                    {
+                        case "checkbox":
+                            RefreshCheckBox(settingBorder);
+                            break;
+
+                        default:
+                            break;
+                    }
+
+                }
+            }
+        }
+
+        private void RefreshCheckBox(Border settingBorder)
+        {
+            if (settingBorder.Child is not StackPanel stackPanel) return;
+            if (stackPanel.Children[0] is not CheckBox checkBox) return;
+            if (checkBox.Tag is not UserSetting<bool> setting) return;
+
+            checkBox.IsChecked = setting.Value;
         }
 
         private void SettingCheckBox_Click(object sender, RoutedEventArgs e)
@@ -132,7 +167,14 @@ namespace SmartOrganizerWPF
 
         private void Window_Closed(object sender, System.EventArgs e)
         {
-            UserSettings.SaveSettingsToFile();
+            UserSettings.SaveToFile();
+        }
+
+        private void ResetSettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            UserSettings.ResetToDefault();
+            UserSettings.SaveToFile();
+            RefreshUI();
         }
     }
 }

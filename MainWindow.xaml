@@ -89,7 +89,7 @@
                             </Style>
                         </Button.Style>
                         <Button.Background>
-                            <ImageBrush Stretch="Fill" TileMode="None" ImageSource="/settings_icon.png">
+                            <ImageBrush Stretch="Fill" TileMode="None" ImageSource="Resources\Images\settings_icon.png">
                                 <ImageBrush.RelativeTransform>
                                     <TransformGroup>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7"/>

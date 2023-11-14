@@ -34,7 +34,7 @@ namespace SmartOrganizerWPF
         public MainWindow()
         {
             InitializeComponent();
-            UserSettings.LoadSettingsFromFile();
+            UserSettings.LoadFromFile();
 
             // ADD ALSO USER DEFINED DIRECTORIES
             SelectFolderComboBox.Text = "Select folder";

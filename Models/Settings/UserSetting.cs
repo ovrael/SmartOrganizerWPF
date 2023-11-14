@@ -10,6 +10,7 @@ namespace SmartOrganizerWPF.Models.Settings
 
         private readonly IUserSettingType<T> type;
         public T Value => type.CurrentValue;
+        public T DefaultValue => type.DefaultValue;
 
         public void SetValue(T newValue)
         {

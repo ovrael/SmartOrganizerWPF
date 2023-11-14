@@ -8,8 +8,37 @@
         Title="Settings" Height="600" Width="400" Background="#FF3E415B" WindowStyle="ToolWindow" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" Closed="Window_Closed">
 
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
         <ScrollViewer x:Name="CategoriesScrollViewer" Padding="8,5,8,5">
             <StackPanel/>
         </ScrollViewer>
+        <Button x:Name="ResetSettingsButton" Grid.Row="1" Margin="10,6,10,6" HorizontalContentAlignment="Center" VerticalContentAlignment="Stretch" Padding="0,0,0,0" BorderThickness="0,0,0,0" BorderBrush="{x:Null}" Click="ResetSettingsButton_Click">
+            <Button.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FF7D7CF1"/>
+                    <GradientStop Color="#4C0FCC7A" Offset="1"/>
+                </LinearGradientBrush>
+            </Button.Background>
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Reset settings to default"/>
+                <Border BorderThickness="1" Height="16" Width="16">
+                    <Border.Background>
+                        <ImageBrush ImageSource="/Resources/Images/reset_icon.png">
+                            <ImageBrush.RelativeTransform>
+                                <TransformGroup>
+                                    <ScaleTransform CenterY="0.5" CenterX="0.5" ScaleX="1"/>
+                                    <SkewTransform CenterX="0.5" CenterY="0.5"/>
+                                    <RotateTransform CenterX="0.5" CenterY="0.5"/>
+                                    <TranslateTransform/>
+                                </TransformGroup>
+                            </ImageBrush.RelativeTransform>
+                        </ImageBrush>
+                    </Border.Background>
+                </Border>
+            </StackPanel>
+        </Button>
     </Grid>
 </Window>

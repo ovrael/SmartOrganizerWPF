@@ -6,6 +6,7 @@ import exifread
 from datetime import datetime
 import os
 import time
+import calendar
 
 class OrganizeFile:
     def __init__(self, path, organizedPath=""):
@@ -77,7 +78,7 @@ def organize_by_date(organizedFiles: list[OrganizeFile]) -> list[OrganizeFile]:
             file.organizedPath = f"Other"
         
         if creation_month != None:
-            file.organizedPath += f"/{creation_month}"
+            file.organizedPath += "/{:02d}".format(creation_month) + f" - {calendar.month_name[creation_month]}"
         else:
             file.organizedPath += f"/Other"
         

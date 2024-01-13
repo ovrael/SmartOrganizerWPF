@@ -156,6 +156,7 @@ namespace SmartOrganizerWPF.Common.Trees
         {
             if (sender is not TreeViewItem directoryItem) return;
             e.Handled = true;
+            if (directoryItem.Equals(fromDragDirectory)) return;
 
             if (e.Data.GetData(DataFormats.StringFormat) is not string combinedData) return;
 

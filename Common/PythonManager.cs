@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
 
 namespace SmartOrganizerWPF.Common
@@ -11,18 +12,18 @@ namespace SmartOrganizerWPF.Common
     {
         private static readonly string pythonExecPath = string.Empty;
 
-        private static readonly string organizePicturesScriptPath = string.Empty;
+        private static readonly string organizeByDateScriptPath = string.Empty;
 
         private static class Features
         {
-            public static readonly string OrganizePictures = "test.py";
+            public static readonly string OrganizeByDate = "organizeByDate.py";
         }
 
 
         static PythonManager()
         {
             pythonExecPath = GetPythonPath();
-            organizePicturesScriptPath = GetScriptPath(Features.OrganizePictures);
+            organizeByDateScriptPath = GetScriptPath(Features.OrganizeByDate);
         }
 
         private static string GetPythonPath()
@@ -66,20 +67,20 @@ namespace SmartOrganizerWPF.Common
             return scriptPath;
         }
 
-        public static string[] OrganizePictures(List<string> files)
+        public static string[] OrganizeByDate(List<string> files)
         {
-            if (!File.Exists(organizePicturesScriptPath))
+            if (!File.Exists(organizeByDateScriptPath))
             {
                 MessageBox.Show("Oops... Something went wrong. Cannot localize script for organizing pictures");
                 return Array.Empty<string>();
             }
 
             string randomTempPath = Path.GetTempFileName();
-            File.WriteAllLines(randomTempPath, files);
+            File.WriteAllLines(randomTempPath, files, Encoding.UTF8);
 
             ProcessStartInfo start = new ProcessStartInfo();
             start.FileName = pythonExecPath;
-            start.Arguments = $"\"{organizePicturesScriptPath}\" {randomTempPath}";
+            start.Arguments = $"\"{organizeByDateScriptPath}\" {randomTempPath}";
             start.UseShellExecute = false;
             start.RedirectStandardOutput = true;
             start.RedirectStandardError = true;
@@ -101,11 +102,9 @@ namespace SmartOrganizerWPF.Common
                         return Array.Empty<string>();
                     }
 
-
                     resultFilePath = reader.ReadToEnd().Trim();
-
-                    //Debug.WriteLine("Path to file from Python script: " + resultFilePath);
                 }
+
             }
 
 
@@ -136,7 +135,7 @@ namespace SmartOrganizerWPF.Common
         internal static void PrintData()
         {
             MessageBox.Show($"pythonPath: {pythonExecPath}");
-            MessageBox.Show($"organizePicturesScriptPath: {organizePicturesScriptPath}");
+            MessageBox.Show($"organizePicturesScriptPath: {organizeByDateScriptPath}");
         }
     }
 }

@@ -2,10 +2,13 @@
 import random
 import tempfile
 import locale
-
+import exifread
+from datetime import datetime
+import os
+import time
 
 class OrganizeFile:
-    def __init__(self, path, organizedPath):
+    def __init__(self, path, organizedPath=""):
         self.path = path
         self.organizedPath = organizedPath
         
@@ -37,6 +40,7 @@ def test(organizedFiles: list[OrganizeFile]) -> list[OrganizeFile]:
     }
 
     for file in organizedFiles:
+        # print(file.path)
         level0: str = random.choice(randomDirectoriesLevel0)
         level1: str = random.choice(randomDirectoriesLevel1[level0])
         file.organizedPath = f"{level0}/{level1}"
@@ -45,6 +49,45 @@ def test(organizedFiles: list[OrganizeFile]) -> list[OrganizeFile]:
 
     return organizedFiles
 
+def get_creation_date(file_path):
+    try:
+        with open(file_path, 'rb') as f:
+            tags = exifread.process_file(f)
+            date_taken = tags.get('EXIF DateTimeOriginal')
+            if date_taken:
+                return datetime.strptime(str(date_taken), '%Y:%m:%d %H:%M:%S')
+    except Exception:
+        pass
+    return None
+
+def organize_by_date(organizedFiles: list[OrganizeFile]) -> list[OrganizeFile]:
+
+    for file in organizedFiles:
+        
+        statinfo = os.stat(file.path)
+        statinfo.st_ctime
+        # creation_timestamp = os.path.getctime(rf'{file.path}')
+        creation_datetime = datetime.fromtimestamp(statinfo.st_ctime)
+        creation_year = creation_datetime.year
+        creation_month = creation_datetime.month
+
+        if creation_year != None:
+            file.organizedPath = f"{creation_year}"
+        else:
+            file.organizedPath = f"Other"
+        
+        if creation_month != None:
+            file.organizedPath += f"/{creation_month}"
+        else:
+            file.organizedPath += f"/Other"
+        
+        # # try:
+
+        # except Exception:
+        #     file.organizedPath = f"Other"
+        #     pass
+        
+    return organizedFiles
 
 def main(filePath):
     # Something went wrong with passing arguments
@@ -54,11 +97,11 @@ def main(filePath):
 
     # Load files paths to OrganizeFile list
     organizedFiles: list[OrganizeFile] = []
-    with open(filePath) as file:
+    with open(filePath, mode='r', encoding='utf-8-sig') as file:
         organizedFiles = [OrganizeFile(line.strip(), "") for line in file]
 
     # Randomize organized directory for given files
-    organizedFiles = test(organizedFiles)
+    organizedFiles = organize_by_date(organizedFiles)
 
     # Write organized files (path?organizedDirectory) to temporary file
     path: str = saveOrganizedFiles(organizedFiles)

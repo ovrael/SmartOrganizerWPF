@@ -30,6 +30,7 @@ namespace SmartOrganizerWPF
         private readonly OrganizedTree organizedTree;
 
         private CancellationTokenSource scanCancelTokenSource;
+        private bool initialized = false;
 
         public MainWindow()
         {
@@ -58,6 +59,7 @@ namespace SmartOrganizerWPF
 
             // Is scanning
             ScanButton.Tag = false;
+            initialized = true;
         }
 
         private void ChangeScanStatus(bool isScanning)
@@ -105,6 +107,8 @@ namespace SmartOrganizerWPF
         }
         private async void SelectFolderComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (!initialized) return;
+
             ComboBox comboBox = sender as ComboBox;
             if (comboBox == null || comboBox.SelectedItem == null) return;
 
@@ -221,11 +225,16 @@ namespace SmartOrganizerWPF
 
             try
             {
-                string[] paths = PythonManager.OrganizePictures(selectedDirectory.GetAllFiles());
+                string[] paths = PythonManager.OrganizeByDate(selectedDirectory.GetAllFiles());
                 if (paths.Length == 0) return;
 
                 organizedTree.BuildTree(paths);
                 MoveFilesButton.IsEnabled = true;
+
+                if (UserSettings.CopyOnRun.Value)
+                {
+                    MoveFiles();
+                }
             }
             catch (Exception ex)
             {
@@ -262,7 +271,7 @@ namespace SmartOrganizerWPF
             }
         }
 
-        private void MoveFilesButton_Click(object sender, RoutedEventArgs e)
+        private void MoveFiles()
         {
             MoveFilesButton.IsEnabled = false;
 
@@ -290,6 +299,11 @@ namespace SmartOrganizerWPF
             }
 
             MoveFilesButton.IsEnabled = true;
+        }
+
+        private void MoveFilesButton_Click(object sender, RoutedEventArgs e)
+        {
+            MoveFiles();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

@@ -50,6 +50,11 @@ namespace SmartOrganizerWPF.Common.LoadFiles
         internal static List<FileData> LoadFiles(string directoryFullPath)
         {
             List<FileData> files = new List<FileData>();
+            if (!Directory.Exists(directoryFullPath))
+            {
+                return files;
+            }
+
             string[] filePaths = Directory.GetFiles(directoryFullPath);
 
             foreach (var filePath in filePaths)

@@ -1,4 +1,5 @@
 ﻿using SmartOrganizerWPF.Models.Settings;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -73,6 +74,15 @@ namespace SmartOrganizerWPF.Common
             "Program will only show notification after work is done",
             "Top level organized folder will be open after notification of completed work"
         ));
+
+        public static UserSetting<bool> CopyOnRun = new UserSetting<bool>(
+            "Copy on run",
+            "Copies files to destination after organizing without user interaction.",
+            new BoolSetting(
+                false,
+                "Copy files to destination after run",
+                "Allow user to modifie organized tree after run, then user must start copying "
+            ));
 
         static UserSettings()
         {

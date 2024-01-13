@@ -1,4 +1,5 @@
 ﻿using SmartOrganizerWPF.Models;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -66,7 +67,10 @@ namespace SmartOrganizerWPF.Common.LoadFiles
         internal static void SetAdditionalExtensions(string text)
         {
             if (text.Length == 0 || text == "Additional extensions")
+            {
+                additionalExtensions = Array.Empty<string>();
                 return;
+            }
 
             string[] extensions = text.Split(new char[] { '?', '|' });
             for (int i = 0; i < extensions.Length; i++)

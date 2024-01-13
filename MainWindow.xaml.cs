@@ -37,17 +37,21 @@ namespace SmartOrganizerWPF
             UserSettings.LoadFromFile();
 
             // ADD ALSO USER DEFINED DIRECTORIES
-            SelectFolderComboBox.Text = "Select folder";
-            SelectFolderComboBox.Items.Add("Select folder from explorer...");
             SelectFolderComboBox.Items.Add(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic));
             SelectFolderComboBox.Items.Add(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures));
             SelectFolderComboBox.Items.Add(Environment.GetFolderPath(Environment.SpecialFolder.Personal));
             SelectFolderComboBox.Items.Add($"C:\\Users\\{Environment.UserName}\\Downloads");
+#if DEBUG
             SelectFolderComboBox.Items.Add($"D:\\_Test");
+#endif
+            SelectFolderComboBox.Items.Add("Select folder from explorer...");
+            SelectFolderComboBox.SelectedIndex = SelectFolderComboBox.Items.Count - 1;
+
             settingsWindow = null;
 
             FileTypesComboBox.ItemsSource = Enum.GetValues(typeof(FileType)).Cast<FileType>();
             FileTypesComboBox.SelectedIndex = 0;
+            FileTypesComboBox.SelectedValue = FileType.All;
 
             loadedFilesTree = new ExplorerTree(ExplorerTreeView);
             organizedTree = new OrganizedTree(OrganizedTreeView);
@@ -108,7 +112,7 @@ namespace SmartOrganizerWPF
             if (folderName == null || folderName.Length == 0) return;
 
             // Selected: choose other directory
-            if (comboBox.SelectedIndex == 0)
+            if (comboBox.SelectedIndex == SelectFolderComboBox.Items.Count - 1)
             {
                 CommonOpenFileDialog dialog = new CommonOpenFileDialog();
                 dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
@@ -118,8 +122,8 @@ namespace SmartOrganizerWPF
                     return;
                 }
 
-                SelectFolderComboBox.Items.Add(dialog.FileName);
-                SelectFolderComboBox.SelectedIndex = SelectFolderComboBox.Items.Count - 1;
+                SelectFolderComboBox.Items.Insert(SelectFolderComboBox.Items.Count - 1, dialog.FileName);
+                SelectFolderComboBox.SelectedIndex = SelectFolderComboBox.Items.Count - 2;
                 folderName = dialog.FileName;
 
                 dialog.Dispose();
@@ -176,7 +180,7 @@ namespace SmartOrganizerWPF
             if (selectedFolderPath == null) return;
             if (selectedFolderPath == string.Empty) return;
             if (selectedFolderPath.ToLower() == "selected folder") return;
-            loadingLabel.Content = "Loading... ";
+            loadingLabel.Content = "Loading...";
             OrganizeButton.IsEnabled = false;
 
             LoadFilesManager.SetAdditionalExtensions(ExtensionsTextBox.Text);

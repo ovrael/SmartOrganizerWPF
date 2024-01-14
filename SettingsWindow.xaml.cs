@@ -25,6 +25,7 @@ namespace SmartOrganizerWPF
             organizingFilesCategory.Children.Add(CreateCheckBoxSetting(UserSettings.CreateEmptyFolders));
             organizingFilesCategory.Children.Add(CreateCheckBoxSetting(UserSettings.OpenOrganizedFolderAfterWork));
             organizingFilesCategory.Children.Add(CreateCheckBoxSetting(UserSettings.CopyOnRun));
+            organizingFilesCategory.Children.Add(CreateCheckBoxSetting(UserSettings.OverwriteMoved));
         }
 
         private StackPanel? GetCategory(string tag)

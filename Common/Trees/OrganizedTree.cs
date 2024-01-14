@@ -275,13 +275,20 @@ namespace SmartOrganizerWPF.Common.Trees
         {
             if (!File.Exists(filePath)) return;
 
-            if (UserSettings.DeleteMovedFiles.Value)
+            try
             {
-                File.Move(filePath, Path.Combine(path, Path.GetFileName(filePath)));
+                if (UserSettings.DeleteMovedFiles.Value)
+                {
+                    File.Move(filePath, Path.Combine(path, Path.GetFileName(filePath)), UserSettings.OverwriteMoved.Value);
+                }
+                else
+                {
+                    File.Copy(filePath, Path.Combine(path, Path.GetFileName(filePath)), UserSettings.OverwriteMoved.Value);
+                }
             }
-            else
+            catch (Exception e)
             {
-                File.Copy(filePath, Path.Combine(path, Path.GetFileName(filePath)));
+                Debug.WriteLine($"Error when moving file {filePath} to {path}: " + e.ToString());
             }
         }
     }

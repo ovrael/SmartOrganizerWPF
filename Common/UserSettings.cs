@@ -84,6 +84,15 @@ namespace SmartOrganizerWPF.Common
                 "Allow user to modifie organized tree after run, then user must start copying "
             ));
 
+        public static UserSetting<bool> OverwriteMoved = new UserSetting<bool>(
+            "Overwrite moved files",
+            "Overwrites existed files when moving",
+            new BoolSetting(
+                false,
+                "Overwrite already existed files",
+                "Do not overwrite, old files still exist and file won't be moved"
+            ));
+
         static UserSettings()
         {
             LoadFromFile();
